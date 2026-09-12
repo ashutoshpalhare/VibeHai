@@ -39,3 +39,8 @@ git clone https://github.com/ashutoshpalhare/VibeHai.git
 cd VibeHai
 npm install
 npm run dev
+```
+
+---
+
+> Note: This project is actively being improved.
