@@ -4,13 +4,14 @@ import './index.css'
 import App from './App.jsx'
 import { PlayerProvider } from './context/PlayerContext'
 import { PlaylistProvider } from './context/PlaylistContext'
+import { LibraryProvider } from './context/LibraryContext'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <PlayerProvider>
+  <PlayerProvider>
   <PlaylistProvider>
-    <App />
+    <LibraryProvider>
+      <App />
+    </LibraryProvider>
   </PlaylistProvider>
-</PlayerProvider>
-  </StrictMode>,
+</PlayerProvider>,
 )

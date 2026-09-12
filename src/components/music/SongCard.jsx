@@ -3,10 +3,15 @@ import { motion } from 'framer-motion'
 import { Play, Plus, Heart, MoreHorizontal } from 'lucide-react'
 import { usePlayer } from '../../hooks/usePlayer'
 import AddToPlaylistModal from './AddToPlaylistModal'
+import { Heart } from 'lucide-react'
+import { useLibrary } from '../../hooks/useLibrary'
 
 function SongCard({ song, index = 0 }) {
   const { playTrack } = usePlayer()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { toggleLike, isLiked } = useLibrary()
+
+const liked = isLiked(song.id)
 
   return (
     <>
@@ -30,6 +35,28 @@ function SongCard({ song, index = 0 }) {
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
+           
+           <button
+  type="button"
+  onClick={(event) => {
+    event.stopPropagation()
+    toggleLike(song)
+  }}
+  aria-label={liked ? `Unlike ${song.title}` : `Like ${song.title}`}
+  className="vh-icon-button"
+>
+  <Heart
+    size={17}
+    fill={liked ? 'currentColor' : 'none'}
+    className={
+      liked
+        ? 'text-[var(--vh-magenta)]'
+        : 'text-[var(--vh-muted)]'
+    }
+  />
+</button>
+           
+           
             {/* Play Button Overlay */}
             <div className="absolute bottom-3 right-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
               <button
