@@ -1,7 +1,10 @@
 {
-  "name": "vibe-hai",
+  {
+  "name": "vibehai",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "VibeHai - A modern music streaming platform inspired by Spotify",
+  "author": "Ashutosh Palhare",
   "type": "module",
   "scripts": {
     "dev": "vite",
