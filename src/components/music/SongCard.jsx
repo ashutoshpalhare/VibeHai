@@ -14,7 +14,6 @@ import AddToPlaylistModal from './AddToPlaylistModal'
 
 function SongCard({ song, index = 0 }) {
   const { playTrack } = usePlayer()
-
   const { toggleLike, isLiked } = useLibrary()
 
   // Add to Playlist modal state
@@ -27,9 +26,7 @@ function SongCard({ song, index = 0 }) {
   // Like / Unlike song
   // ---------------------------------------------------------
   const handleLike = (event) => {
-    // Prevent card / other button actions
     event.stopPropagation()
-
     toggleLike(song)
   }
 
@@ -45,7 +42,6 @@ function SongCard({ song, index = 0 }) {
   // ---------------------------------------------------------
   const handleAddToPlaylist = (event) => {
     event.stopPropagation()
-
     setIsModalOpen(true)
   }
 
@@ -64,15 +60,15 @@ function SongCard({ song, index = 0 }) {
           duration: 0.35,
           delay: index * 0.04,
         }}
+        whileHover={{
+          y: -4,
+          transition: { duration: 0.2 },
+        }}
         className="group min-w-[170px] max-w-[190px] shrink-0"
       >
         <div className="relative overflow-hidden rounded-2xl border border-[var(--vh-border)] bg-[var(--vh-charcoal)] p-2 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--vh-border-hover)] hover:bg-[var(--vh-dark-gray)] hover:shadow-[var(--vh-shadow-md)]">
-
-          {/* =================================================
-              COVER IMAGE
-          ================================================= */}
+          {/* COVER IMAGE */}
           <div className="relative aspect-square overflow-hidden rounded-xl">
-
             <img
               src={song.cover}
               alt={`${song.title} cover`}
@@ -82,9 +78,7 @@ function SongCard({ song, index = 0 }) {
             {/* Dark overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-            {/* =================================================
-                LIKE BUTTON
-            ================================================= */}
+            {/* LIKE BUTTON */}
             <button
               type="button"
               onClick={handleLike}
@@ -98,64 +92,38 @@ function SongCard({ song, index = 0 }) {
             >
               <Heart
                 size={17}
-                fill={
-                  liked
-                    ? 'currentColor'
-                    : 'none'
-                }
-                className={
-                  liked
-                    ? 'text-[var(--vh-magenta)]'
-                    : 'text-white'
-                }
+                fill={liked ? 'currentColor' : 'none'}
+                className={liked ? 'text-[var(--vh-magenta)]' : 'text-white'}
               />
             </button>
 
-            {/* =================================================
-                PLAY BUTTON
-            ================================================= */}
+            {/* PLAY BUTTON */}
             <div className="absolute bottom-3 right-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-
               <button
                 type="button"
                 onClick={handlePlay}
                 aria-label={`Play ${song.title}`}
                 className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black shadow-xl transition-transform hover:scale-105 active:scale-95"
               >
-                <Play
-                  size={18}
-                  fill="currentColor"
-                />
+                <Play size={18} fill="currentColor" />
               </button>
             </div>
           </div>
 
-          {/* =================================================
-              SONG DETAILS
-          ================================================= */}
+          {/* SONG DETAILS */}
           <div className="px-1 pt-3">
-
             <div className="flex items-start justify-between gap-2">
-
-              {/* Song title + artist */}
               <div className="min-w-0 flex-1">
-
                 <h3 className="truncate font-medium text-[var(--vh-text)]">
                   {song.title}
                 </h3>
-
                 <p className="mt-1 truncate text-sm text-[var(--vh-muted)]">
                   {song.artist}
                 </p>
-
               </div>
 
-              {/* =================================================
-                  ACTION BUTTONS
-              ================================================= */}
+              {/* ACTION BUTTONS */}
               <div className="flex shrink-0 items-center gap-1">
-
-                {/* Like button - visible on smaller screens */}
                 <button
                   type="button"
                   onClick={handleLike}
@@ -169,20 +137,11 @@ function SongCard({ song, index = 0 }) {
                 >
                   <Heart
                     size={16}
-                    fill={
-                      liked
-                        ? 'currentColor'
-                        : 'none'
-                    }
-                    className={
-                      liked
-                        ? 'text-[var(--vh-magenta)]'
-                        : ''
-                    }
+                    fill={liked ? 'currentColor' : 'none'}
+                    className={liked ? 'text-[var(--vh-magenta)]' : ''}
                   />
                 </button>
 
-                {/* Add to playlist */}
                 <button
                   type="button"
                   onClick={handleAddToPlaylist}
@@ -192,7 +151,6 @@ function SongCard({ song, index = 0 }) {
                   <Plus size={18} />
                 </button>
 
-                {/* More options */}
                 <button
                   type="button"
                   aria-label={`More options for ${song.title}`}
@@ -200,16 +158,13 @@ function SongCard({ song, index = 0 }) {
                 >
                   <MoreHorizontal size={18} />
                 </button>
-
               </div>
             </div>
           </div>
         </div>
       </motion.article>
 
-      {/* =====================================================
-          ADD TO PLAYLIST MODAL
-      ===================================================== */}
+      {/* ADD TO PLAYLIST MODAL */}
       {isModalOpen && (
         <AddToPlaylistModal
           song={song}
