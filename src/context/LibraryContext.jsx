@@ -1,26 +1,72 @@
-import { createContext, useContext, useState } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+
+import {
+  getStorageItem,
+  setStorageItem,
+  STORAGE_KEYS,
+} from '../utils/storage'
 
 const LibraryContext = createContext(null)
 
 export function LibraryProvider({ children }) {
-  const [likedSongs, setLikedSongs] = useState([])
+  // ---------------------------------------------------------
+  // Load liked songs from LocalStorage on first render
+  // ---------------------------------------------------------
+  const [likedSongs, setLikedSongs] = useState(() =>
+    getStorageItem(STORAGE_KEYS.LIKED_SONGS, [])
+  )
 
+  // ---------------------------------------------------------
+  // Save liked songs whenever they change
+  // ---------------------------------------------------------
+  useEffect(() => {
+    setStorageItem(
+      STORAGE_KEYS.LIKED_SONGS,
+      likedSongs
+    )
+  }, [likedSongs])
+
+  // ---------------------------------------------------------
   // Like / Unlike song
+  // ---------------------------------------------------------
   const toggleLike = (song) => {
-    setLikedSongs((prev) => {
-      const exists = prev.some((item) => item.id === song.id)
+    if (!song?.id) return
 
+    setLikedSongs((prev) => {
+      const exists = prev.some(
+        (item) => item.id === song.id
+      )
+
+      // If already liked → Unlike
       if (exists) {
-        return prev.filter((item) => item.id !== song.id)
+        return prev.filter(
+          (item) => item.id !== song.id
+        )
       }
 
-      return [...prev, { ...song, liked: true }]
+      // Otherwise → Like
+      return [
+        ...prev,
+        {
+          ...song,
+          liked: true,
+        },
+      ]
     })
   }
 
-  // Check whether song is liked
+  // ---------------------------------------------------------
+  // Check whether a song is liked
+  // ---------------------------------------------------------
   const isLiked = (songId) => {
-    return likedSongs.some((song) => song.id === songId)
+    return likedSongs.some(
+      (song) => song.id === songId
+    )
   }
 
   return (
@@ -36,6 +82,9 @@ export function LibraryProvider({ children }) {
   )
 }
 
+// ---------------------------------------------------------
+// Custom hook
+// ---------------------------------------------------------
 export function useLibraryContext() {
   const context = useContext(LibraryContext)
 
