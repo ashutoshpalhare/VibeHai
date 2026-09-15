@@ -18,6 +18,21 @@ import { songs, albums, artists } from '../data'
 import { usePlaylist } from '../hooks/usePlaylist'
 
 function Library() {
+  const handleDeletePlaylist = (playlistId) => {
+  const playlist = playlists.find(
+    (item) => item.id === playlistId
+  )
+
+  if (!playlist) return
+
+  const confirmed = window.confirm(
+    `Delete "${playlist.name}" playlist?`
+  )
+
+  if (!confirmed) return
+
+  deletePlaylist(playlistId)
+}
   const { playlists, createPlaylist } = usePlaylist()
 
   const [activeTab, setActiveTab] = useState('Playlists')
@@ -103,12 +118,13 @@ function Library() {
 
         return (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {playlists.map((playlist) => (
-              <PlaylistCard
-                key={playlist.id}
-                playlist={playlist}
-              />
-            ))}
+           {playlists.map((playlist) => (
+  <PlaylistCard
+    key={playlist.id}
+    playlist={playlist}
+    onDelete={() => handleDeletePlaylist(playlist.id)}
+  />
+))}
           </div>
         )
 
