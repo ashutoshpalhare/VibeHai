@@ -1,5 +1,14 @@
-import { usePlaylistContext } from '../context/PlaylistContext'
+import { useContext } from 'react'
+import { PlaylistContext } from '../context/PlaylistContext'
 
 export function usePlaylist() {
-  return usePlaylistContext()
+  const context = useContext(PlaylistContext)
+
+  if (!context) {
+    throw new Error(
+      'usePlaylist must be used inside PlaylistProvider'
+    )
+  }
+
+  return context
 }

@@ -1,161 +1,141 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
+import { createContext, useContext, useState } from 'react'
 
-import {
-  getStorageItem,
-  setStorageItem,
-  STORAGE_KEYS,
-} from '../utils/storage'
-
-const PlaylistContext = createContext(null)
+export const PlaylistContext = createContext(null)
 
 export function PlaylistProvider({ children }) {
-  // ---------------------------------------------------------
-  // Load playlists from LocalStorage on first render
-  // ---------------------------------------------------------
-  const [playlists, setPlaylists] = useState(() =>
-    getStorageItem(STORAGE_KEYS.PLAYLISTS, [])
-  )
+  const [playlists, setPlaylists] = useState([])
 
-  // ---------------------------------------------------------
-  // Save playlists whenever they change
-  // ---------------------------------------------------------
-  useEffect(() => {
-    setStorageItem(
-      STORAGE_KEYS.PLAYLISTS,
-      playlists
-    )
-  }, [playlists])
-
-  // ---------------------------------------------------------
   // Create a new playlist
-  // ---------------------------------------------------------
   const createPlaylist = (name) => {
-    const cleanName = name.trim()
+    const trimmedName = name.trim()
 
-    if (!cleanName) return null
+    if (!trimmedName) return null
 
     const playlist = {
       id: crypto.randomUUID(),
-      name: cleanName,
+      name: trimmedName,
       description: '',
       cover: '',
       songs: [],
       createdAt: Date.now(),
     }
 
-    setPlaylists((prev) => [
-      ...prev,
-      playlist,
-    ])
+    setPlaylists((prev) => [...prev, playlist])
 
     return playlist
   }
 
-  // ---------------------------------------------------------
-  // Get playlist by ID
-  // ---------------------------------------------------------
+  // Find a playlist by ID
   const getPlaylistById = (playlistId) => {
     return playlists.find(
       (playlist) => playlist.id === playlistId
     )
   }
 
-  // ---------------------------------------------------------
-  // Rename playlist
-  // ---------------------------------------------------------
-  const renamePlaylist = (
-    playlistId,
-    newName
-  ) => {
-    const cleanName = newName.trim()
-
-    if (!cleanName) return
-
-    setPlaylists((prev) =>
-      prev.map((playlist) =>
-        playlist.id === playlistId
-          ? {
-              ...playlist,
-              name: cleanName,
-            }
-          : playlist
-      )
-    )
-  }
-
-  // ---------------------------------------------------------
   // Delete playlist
-  // ---------------------------------------------------------
   const deletePlaylist = (playlistId) => {
     setPlaylists((prev) =>
       prev.filter(
-        (playlist) =>
-          playlist.id !== playlistId
+        (playlist) => playlist.id !== playlistId
       )
     )
   }
 
-  // ---------------------------------------------------------
-  // Add song to playlist
-  // ---------------------------------------------------------
-  const addSongToPlaylist = (
-    playlistId,
-    song
-  ) => {
-    if (!song?.id) return
+  
+  // Add a song to playlist
+const addSongToPlaylist = (playlistId, song) => {
+  if (!song?.id) return
 
-    setPlaylists((prev) =>
-      prev.map((playlist) => {
-        if (playlist.id !== playlistId) {
-          return playlist
-        }
+  setPlaylists((prev) =>
+    prev.map((playlist) => {
+      if (playlist.id !== playlistId) {
+        return playlist
+      }
+
+      // Prevent duplicate songs
+      const alreadyExists = playlist.songs.some(
+        (item) => item.id === song.id
+      )
+
+      if (alreadyExists) {
+        return playlist
+      }
+
+      const updatedSongs = [...playlist.songs, song]
+
+      return {
+        ...playlist,
+
+        // Automatically use first song artwork as playlist cover
+        cover:
+          playlist.cover ||
+          updatedSongs[0]?.cover ||
+          '',
+
+        songs: updatedSongs,
+      }
+    })
+  )
+}
 
         // Prevent duplicate songs
-        const exists = playlist.songs.some(
+        const alreadyExists = playlist.songs.some(
           (item) => item.id === song.id
         )
 
-        if (exists) {
+        if (alreadyExists) {
           return playlist
         }
 
         return {
           ...playlist,
-
-          songs: [
-            ...playlist.songs,
-            {
-              ...song,
-              liked: Boolean(song.liked),
-            },
-          ],
+          songs: [...playlist.songs, song],
         }
       })
     )
   }
 
-  // ---------------------------------------------------------
-  // Remove song from playlist
-  // ---------------------------------------------------------
-  const removeSongFromPlaylist = (
-    playlistId,
-    songId
-  ) => {
+ // Remove a song from playlist
+const removeSongFromPlaylist = (
+  playlistId,
+  songId
+) => {
+  setPlaylists((prev) =>
+    prev.map((playlist) => {
+      if (playlist.id !== playlistId) {
+        return playlist
+      }
+
+      const updatedSongs = playlist.songs.filter(
+        (song) => song.id !== songId
+      )
+
+      return {
+        ...playlist,
+
+        // If current cover came from the removed song,
+        // use the next available song artwork.
+        cover:
+          updatedSongs.length > 0
+            ? updatedSongs[0]?.cover || ''
+            : '',
+
+        songs: updatedSongs,
+      }
+    })
+  )
+}
+
+
+  // Update playlist information
+  // Useful later for rename, description and cover
+  const updatePlaylist = (playlistId, updates) => {
     setPlaylists((prev) =>
       prev.map((playlist) =>
         playlist.id === playlistId
           ? {
               ...playlist,
-
-              songs: playlist.songs.filter(
-                (song) =>
-                  song.id !== songId
-              ),
+              ...updates,
             }
           : playlist
       )
@@ -166,15 +146,12 @@ export function PlaylistProvider({ children }) {
     <PlaylistContext.Provider
       value={{
         playlists,
-
         createPlaylist,
         getPlaylistById,
-
-        renamePlaylist,
         deletePlaylist,
-
         addSongToPlaylist,
         removeSongFromPlaylist,
+        updatePlaylist,
       }}
     >
       {children}
@@ -182,13 +159,8 @@ export function PlaylistProvider({ children }) {
   )
 }
 
-// ---------------------------------------------------------
-// Custom hook
-// ---------------------------------------------------------
 export function usePlaylistContext() {
-  const context = useContext(
-    PlaylistContext
-  )
+  const context = useContext(PlaylistContext)
 
   if (!context) {
     throw new Error(
