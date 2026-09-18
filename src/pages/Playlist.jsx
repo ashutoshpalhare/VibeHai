@@ -29,7 +29,7 @@ function Playlist() {
     deletePlaylist,
   } = usePlaylist()
 
-  const { playTrack } = usePlayer()
+ const { playQueue } = usePlayer()
 
   const playlist = getPlaylistById(id)
 
@@ -93,10 +93,10 @@ function Playlist() {
 
   // Play first song
   const handlePlayPlaylist = () => {
-    if (!playlist?.songs?.length) return
+  if (!playlist?.songs?.length) return
 
-    playTrack(playlist.songs[0])
-  }
+  playQueue(playlist.songs, 0)
+}
 
   // Open edit modal with current values
   const handleOpenEdit = () => {

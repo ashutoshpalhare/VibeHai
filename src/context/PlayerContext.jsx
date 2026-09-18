@@ -9,43 +9,50 @@ import {
 const PlayerContext = createContext(null)
 
 export function PlayerProvider({ children }) {
-  // Native HTML5 Audio object.
-  // Actual music playback याच object मधून होतो.
+  // =========================================================
+  // AUDIO ENGINE
+  // =========================================================
+
+  // Native HTML5 Audio object
   const audioRef = useRef(new Audio())
 
-  // Current playing song
+  // =========================================================
+  // PLAYER STATE
+  // =========================================================
+
+  // Currently playing track
   const [currentTrack, setCurrentTrack] = useState(null)
 
-  // Playback state
+  // Play / Pause state
   const [isPlaying, setIsPlaying] = useState(false)
 
   // Current playback position
   const [currentTime, setCurrentTime] = useState(0)
 
-  // Total duration of current song
+  // Current track duration
   const [duration, setDuration] = useState(0)
 
-  // Volume: 0 to 1
+  // Volume 0 → 1
   const [volume, setVolume] = useState(1)
 
   // Mute state
   const [isMuted, setIsMuted] = useState(false)
 
-  // Player error
+  // Playback error
   const [error, setError] = useState('')
 
   // =========================================================
-  // QUEUE SYSTEM
+  // QUEUE STATE
   // =========================================================
 
-  // Songs waiting to be played
+  // Current playback queue
   const [queue, setQueue] = useState([])
 
-  // Index of current song inside queue
+  // Index of current track inside queue
   const [currentIndex, setCurrentIndex] = useState(-1)
 
   // =========================================================
-  // PLAY A SINGLE TRACK
+  // PLAY TRACK
   // =========================================================
 
   const playTrack = async (track, newQueue = null) => {
@@ -59,53 +66,47 @@ export function PlayerProvider({ children }) {
     try {
       setError('')
 
-      // If a new queue is provided, use it.
-      if (Array.isArray(newQueue)) {
-        setQueue(newQueue)
+      // -------------------------------------------------------
+      // IMPORTANT:
+      //
+      // If a queue is explicitly supplied,
+      // keep that queue.
+      //
+      // Otherwise this is a standalone track,
+      // so create a fresh queue containing only this track.
+      // -------------------------------------------------------
 
+      if (Array.isArray(newQueue)) {
         const index = newQueue.findIndex(
           (item) => item.id === track.id
         )
 
+        setQueue(newQueue)
         setCurrentIndex(index >= 0 ? index : 0)
       } else {
-        // If no queue exists, make current track the queue.
-        setQueue((prev) => {
-          if (!prev.length) {
-            return [track]
-          }
-
-          return prev
-        })
-
-        // Find current track in existing queue.
-        setCurrentIndex((prevIndex) => {
-          const existingIndex = queue.findIndex(
-            (item) => item.id === track.id
-          )
-
-          return existingIndex >= 0
-            ? existingIndex
-            : prevIndex
-        })
+        setQueue([track])
+        setCurrentIndex(0)
       }
 
-      // Stop previous track
+      // Stop previous audio
       audio.pause()
 
-      // Reset old playback position
+      // Reset playback
       audio.currentTime = 0
 
       // Set new audio source
       audio.src = track.audioUrl
 
-      // Tell React which song is playing
+      // Update current track
       setCurrentTrack(track)
 
+      // Reset progress
       setCurrentTime(0)
+
+      // Use track duration initially
       setDuration(Number(track.duration) || 0)
 
-      // Load new audio
+      // Load audio
       audio.load()
 
       // Start playback
@@ -121,7 +122,7 @@ export function PlayerProvider({ children }) {
   }
 
   // =========================================================
-  // PLAY AN ENTIRE QUEUE / PLAYLIST
+  // PLAY QUEUE
   // =========================================================
 
   const playQueue = async (tracks, startIndex = 0) => {
@@ -129,6 +130,7 @@ export function PlayerProvider({ children }) {
       return
     }
 
+    // Keep index inside valid range
     const safeIndex = Math.max(
       0,
       Math.min(startIndex, tracks.length - 1)
@@ -138,13 +140,13 @@ export function PlayerProvider({ children }) {
 
     if (!track) return
 
-    // Store complete queue first
+    // Store entire queue
     setQueue(tracks)
 
     // Store current index
     setCurrentIndex(safeIndex)
 
-    // Start selected song
+    // Play selected track with complete queue
     await playTrack(track, tracks)
   }
 
@@ -157,13 +159,15 @@ export function PlayerProvider({ children }) {
 
     const nextIndex = currentIndex + 1
 
-    // No next song
+    // No next track
     if (nextIndex >= queue.length) {
       setIsPlaying(false)
       return
     }
 
     const next = queue[nextIndex]
+
+    if (!next) return
 
     setCurrentIndex(nextIndex)
 
@@ -177,22 +181,28 @@ export function PlayerProvider({ children }) {
   const previousTrack = async () => {
     if (!queue.length) return
 
+    const audio = audioRef.current
+
     // If current song has played more than 3 seconds,
     // restart the same song.
-    if (audioRef.current.currentTime > 3) {
-      audioRef.current.currentTime = 0
+    if (audio.currentTime > 3) {
+      audio.currentTime = 0
+      setCurrentTime(0)
       return
     }
 
     const previousIndex = currentIndex - 1
 
-    // Already at first song
+    // Already at first track
     if (previousIndex < 0) {
-      audioRef.current.currentTime = 0
+      audio.currentTime = 0
+      setCurrentTime(0)
       return
     }
 
     const previous = queue[previousIndex]
+
+    if (!previous) return
 
     setCurrentIndex(previousIndex)
 
@@ -233,12 +243,15 @@ export function PlayerProvider({ children }) {
 
     if (!Number.isFinite(time)) return
 
-    audio.currentTime = Math.max(
+    const maxTime = duration || audio.duration || 0
+
+    const nextTime = Math.max(
       0,
-      Math.min(time, duration || 0)
+      Math.min(time, maxTime)
     )
 
-    setCurrentTime(audio.currentTime)
+    audio.currentTime = nextTime
+    setCurrentTime(nextTime)
   }
 
   // =========================================================
@@ -257,6 +270,7 @@ export function PlayerProvider({ children }) {
 
     if (nextVolume > 0) {
       setIsMuted(false)
+      audioRef.current.muted = false
     }
   }
 
@@ -281,17 +295,19 @@ export function PlayerProvider({ children }) {
   useEffect(() => {
     const audio = audioRef.current
 
-    // Update current playback time
+    // Playback progress
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime)
     }
 
-    // Audio metadata loaded
+    // Metadata loaded
     const handleLoadedMetadata = () => {
-      setDuration(audio.duration || 0)
+      if (Number.isFinite(audio.duration)) {
+        setDuration(audio.duration)
+      }
     }
 
-    // Audio started playing
+    // Audio started
     const handlePlay = () => {
       setIsPlaying(true)
     }
@@ -301,9 +317,11 @@ export function PlayerProvider({ children }) {
       setIsPlaying(false)
     }
 
-    // Audio finished
+    // -------------------------------------------------------
+    // AUDIO ENDED
+    // -------------------------------------------------------
+
     const handleEnded = () => {
-      // Automatically play next track
       setCurrentIndex((previousIndex) => {
         const nextIndex = previousIndex + 1
 
@@ -314,14 +332,14 @@ export function PlayerProvider({ children }) {
           setTimeout(() => {
             playTrack(nextTrackItem, queue)
           }, 0)
-        } else {
-          // Queue finished
-          setIsPlaying(false)
+
+          return nextIndex
         }
 
-        return nextIndex < queue.length
-          ? nextIndex
-          : previousIndex
+        // Queue finished
+        setIsPlaying(false)
+
+        return previousIndex
       })
     }
 
@@ -373,7 +391,7 @@ export function PlayerProvider({ children }) {
   }, [volume])
 
   // =========================================================
-  // CLEANUP AUDIO WHEN PROVIDER UNMOUNTS
+  // CLEANUP
   // =========================================================
 
   useEffect(() => {
@@ -384,6 +402,10 @@ export function PlayerProvider({ children }) {
       audio.src = ''
     }
   }, [])
+
+  // =========================================================
+  // CONTEXT VALUE
+  // =========================================================
 
   return (
     <PlayerContext.Provider
@@ -413,7 +435,7 @@ export function PlayerProvider({ children }) {
         nextTrack,
         previousTrack,
 
-        // Play individual track
+        // Individual track
         playTrack,
 
         // Error
