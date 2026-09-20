@@ -133,7 +133,7 @@ function artistList(raw: any): { id: string; name: string }[] {
 
 export function normalizeSong(raw: any): Song {
   return {
-    id: String(raw?.id ?? raw?.songid ?? Math.random().toString(36).slice(2)),
+    id: String(raw?.id ?? raw?.songid ?? `${raw?.name ?? raw?.title ?? "song"}-${raw?.album?.name ?? raw?.album ?? ""}`),
     title: decode(raw?.name ?? raw?.title ?? raw?.song ?? "Untitled"),
     artist: (() => {
       const list = artistList(raw);
