@@ -244,9 +244,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setIsPlaying(false);
       consecutiveFailures.current += 1;
       if (consecutiveFailures.current < 3) {
-        setError("This track couldn't be played — skipping");
-        setTimeout(() => advance(true), 900);
-      } else {
+  setError("This track couldn't be played — skipping");
+
+  const timer = window.setTimeout(() => {
+    advance(true);
+  }, 900);
+
+  return () => window.clearTimeout(timer);
+} else {
         setError("Playback stopped. Try another track.");
         consecutiveFailures.current = 0;
       }
@@ -429,7 +434,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setQueue(list);
         setIndex(clamped);
       }
-      if (source) setQueueSource(source);
+      setQueueSource(source);
 
       // Kick off playback inside the user gesture (required by iOS/Safari)
       if (first?.sources.length) {
