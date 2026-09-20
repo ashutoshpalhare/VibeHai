@@ -386,27 +386,45 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const toggleMute = useCallback(() => setMuted((m) => !m), []);
 
-  const toggleShuffle = useCallback(() => {
-    if (!shuffle) {
-      // turning shuffle ON: keep the current song first, randomise the rest
-      originalOrder.current = queue.slice();
-      const currentSong = queue[index];
-      const rest = queue.filter((_, i) => i !== index);
-      setQueue([currentSong, ...shuffleArray(rest)].filter(Boolean));
-      setIndex(currentSong ? 0 : 0);
-      setShuffle(true);
-    } else {
-      // turning shuffle OFF: restore the original order
-      const back = originalOrder.current;
-      if (back.length === queue.length) {
-        const currentSong = queue[index];
-        const newIndex = Math.max(0, back.findIndex((s) => s.id === currentSong?.id));
-        setQueue(back);
-        setIndex(newIndex);
-      }
-      setShuffle(false);
+
+
+const toggleShuffle = useCallback(() => {
+  if (!shuffle) {
+    // turning shuffle ON: keep the current song first
+    originalOrder.current = queue.slice();
+
+    const currentSong = queue[index];
+    const rest = queue.filter((_, i) => i !== index);
+
+    setQueue([currentSong, ...shuffleArray(rest)].filter(Boolean));
+    setIndex(0);
+    setShuffle(true);
+  } else {
+    // turning shuffle OFF: restore original order only when it is still valid
+    const back = originalOrder.current;
+
+    const currentSong = queue[index];
+    const currentId = currentSong?.id;
+
+    const queueIds = new Set(queue.map((s) => s.id));
+    const validOriginal = back.filter((s) => queueIds.has(s.id));
+
+    if (validOriginal.length === queue.length) {
+      const newIndex = Math.max(
+        0,
+        validOriginal.findIndex((s) => s.id === currentId)
+      );
+
+      setQueue(validOriginal);
+      setIndex(newIndex);
     }
-  }, [queue, index, shuffle]);
+
+    setShuffle(false);
+  }
+}, [queue, index, shuffle]);
+
+
+
 
   const cycleRepeat = useCallback(() => {
     setRepeat((r) => (r === "off" ? "all" : r === "all" ? "one" : "off"));
