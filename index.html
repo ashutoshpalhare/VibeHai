@@ -1,32 +1,105 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
-
-    <meta
-      name="theme-color"
-      content="#050505"
-    />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>VibeHai — Music for every mood</title>
     <meta
       name="description"
-      content="VibeHai — Your vibe. Your music."
+      content="VibeHai — a beautiful, fast music player for Hindi, Punjabi, Tamil and English songs. Search millions of tracks, build playlists, and vibe."
     />
-
-    <title>VibeHai — Your vibe. Your music.</title>
+    <meta name="author" content="Ashutosh Palhare" />
+    <meta name="theme-color" content="#08080c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="VibeHai" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="VibeHai" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <script>
+      /* apply persisted theme before first paint to avoid a flash */
+      (function () {
+        try {
+          var t = JSON.parse(localStorage.getItem("vibehai:theme") || '"dark"');
+          document.documentElement.dataset.theme = t === "light" ? "light" : "dark";
+        } catch (e) {
+          document.documentElement.dataset.theme = "dark";
+        }
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", document.documentElement.dataset.theme === "light" ? "#f1eff8" : "#08080c");
+      })();
+    </script>
+    <style>
+      html,
+      body,
+      #root {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: #08080c;
+        color: #f4f4f6;
+        transition: background-color 0.3s ease;
+        font-family:
+          ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overscroll-behavior: none;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(120% 90% at 20% 0%, #2a1550 0%, #0b0b12 55%, #07070b 100%);
+        z-index: 9999;
+        transition: opacity 0.4s ease;
+      }
+      #boot .mark {
+        width: 76px;
+        height: 76px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #8b5cf6, #d946ef 55%, #fb7185);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 18px 60px -12px rgba(168, 85, 247, 0.7);
+        animation: bootpulse 1.6s ease-in-out infinite;
+      }
+      @keyframes bootpulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.07);
+        }
+      }
+      #boot p {
+        margin-top: 18px;
+        letter-spacing: 0.3em;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: rgba(244, 244, 246, 0.55);
+        text-align: center;
+      }
+    </style>
   </head>
-
   <body>
     <div id="root"></div>
-
-    <script
-      type="module"
-      src="/src/main.jsx"
-    ></script>
+    <div id="boot">
+      <div style="text-align: center">
+        <div class="mark">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </svg>
+        </div>
+        <p>Vibe Hai</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
