@@ -1,0 +1,47 @@
+{
+  "name": "VibeHai — Music for every mood",
+  "short_name": "VibeHai",
+  "description": "Built by Ashutosh Palhare — a fast, beautiful music player for Hindi, Punjabi, Tamil and English songs. Build playlists, queue tracks and vibe — no signup required.",
+  "id": "vibehai",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#08080c",
+  "theme_color": "#08080c",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["music", "entertainment", "multimedia"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Search", "url": "./#/search", "description": "Find songs, albums and artists" },
+    { "name": "Liked Songs", "url": "./#/liked", "description": "Your saved tracks" },
+    { "name": "Your Library", "url": "./#/library", "description": "Playlists and saved music" }
+  ]
+}
