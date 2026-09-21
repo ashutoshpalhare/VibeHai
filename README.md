@@ -1,430 +1,287 @@
-# 🎧 VibeHai
+# 🎵 VibeHai
 
-### A modern, immersive music streaming experience built for your vibe.
+> **A modern, local-first music streaming experience built with React, TypeScript, and Vite.**
 
-VibeHai is a modern music streaming web application inspired by the experience of today's popular music platforms.
+VibeHai is a modern Spotify-inspired music player focused on a clean listening experience, powerful queue management, persistent preferences, and a responsive interface.
 
-It combines a sleek dark interface, real music discovery, persistent personal libraries, playlists, and a full-featured audio player into a focused and responsive web experience.
-
-> **Discover music. Build your library. Play your vibe.**
+It combines a polished React UI with a flexible JioSaavn-compatible API layer, client-side persistence, advanced playback controls, and PWA capabilities — while keeping the project simple enough to understand and extend.
 
 ---
 
-## ✨ Highlights
+## ✨ Features
 
-* 🎵 **Real music discovery** powered by a JioSaavn-compatible API
-* 🔎 **Instant music search** for songs, artists, and albums
-* ▶️ **Full audio playback** using the browser's native HTML5 Audio API
-* ⏭️ **Queue-based playback** with next / previous controls
-* 🎚️ **Seek, volume and mute controls**
-* ❤️ **Liked Songs** with persistent local storage
-* 📚 **Personal Library** for playlists, songs, albums and artists
-* 🎶 **Custom playlist creation**
-* 🗑️ **Playlist management** including rename and delete
-* 💾 **Local persistence** — personal data stays in the browser
-* 📱 **Responsive layout** designed for desktop and mobile
-* ✨ **Smooth motion and micro-interactions**
-* 🌌 **Immersive dark UI** with gradient accents and ambient visuals
-* ♿ **Keyboard-friendly focus states and reduced-motion support**
+### 🎧 Music Discovery
 
----
+* Search songs, albums, artists, and playlists
+* Discover curated music shelves
+* Album, artist, and playlist detail pages
+* Dedicated discovery experience
+* Responsive media cards and song lists
 
-## 🖼️ Experience
-
-VibeHai is designed around a music-first experience rather than a traditional dashboard.
-
-### Home
-
-Discover curated sections such as:
-
-* Quick Picks
-* Made For You
-* Trending Now
-* Fresh Vibes
-* Pick Your Mood
-* Recently Played
-
-The home experience combines curated content with live music data to make discovery feel dynamic.
-
-### Search
-
-Search for music directly from the application.
-
-Results are fetched from the configured music API, normalized into a consistent internal song format, and presented through reusable music cards.
-
-### Library
-
-Your personal music space includes:
-
-* Playlists
-* Songs
-* Albums
-* Artists
-* Sorting controls
-* Playlist creation and management
-
-### Liked Songs
-
-Save tracks you enjoy and access them later from a dedicated collection.
-
-You can:
-
-* Like / unlike songs
-* Play an individual track
-* Play all liked songs
-* Continue using your saved collection after refreshing the page
-
----
-
-## 🎵 Audio Player
-
-VibeHai includes a persistent music player powered by the browser's native HTML5 Audio API.
-
-The player supports:
+### ▶️ Advanced Music Player
 
 * Play / pause
-* Next track
-* Previous track
-* Automatic next-track playback
-* Playback queue
-* Progress tracking
-* Seeking
-* Volume control
-* Mute / unmute
-* Playback error handling
+* Previous / next track
+* Seekable progress bar
+* Volume control and mute
+* Shuffle
+* Repeat: Off / All / One
+* Queue management
+* Play next
+* Add to queue
+* Remove and reorder queue items
+* Sleep timer
+* Recently played tracks
+* Persistent playback preferences
 
-The player is managed through a dedicated React context so playback state can be shared across the application.
+### 🔀 Smart Queue
 
----
+* Start playback from any song
+* Shuffle while keeping the current song first
+* Restore the original queue after shuffle
+* Queue persistence
+* Queue source tracking
+* Protection against repeated playback failures
 
-## 💾 Local-First Personalization
+### 📱 Modern Experience
 
-VibeHai does not require an account for personal library features.
+* Responsive desktop and mobile UI
+* Dark/light theme support
+* Smooth animations and transitions
+* Toast notifications
+* Keyboard shortcuts
+* Loading, error, and empty states
+* Media Session API integration for supported browsers
 
-Liked songs and playlists are stored using the browser's `localStorage`.
+### 💾 Local Persistence
 
-This means your personal library can persist between sessions without requiring a traditional backend database.
+VibeHai stores user preferences and relevant playback state locally using browser storage.
 
-Stored data includes:
+This includes things such as:
 
-```text
-Liked Songs
-Playlists
-```
+* Library data
+* Queue
+* Playback preferences
+* Volume/mute state
+* Shuffle/repeat state
+* Recently played information
+* Theme preferences
 
-> Your local library is tied to the browser/device where it was created.
+No account is required to use the application.
 
----
+### 📲 PWA Support
 
-## 🧠 Architecture
+VibeHai includes Progressive Web App infrastructure with:
 
-VibeHai uses a component-based React architecture with dedicated contexts for application state.
-
-```text
-src/
-├── components/
-│   ├── layouts/
-│   ├── music/
-│   └── player/
-│
-├── context/
-│   ├── PlayerContext.jsx
-│   ├── PlaylistContext.jsx
-│   └── LibraryContext.jsx
-│
-├── data/
-├── hooks/
-├── pages/
-│   ├── Home.jsx
-│   ├── Search.jsx
-│   ├── Library.jsx
-│   └── LikedSongs.jsx
-│
-├── services/
-│   └── jiosaavn.js
-│
-├── utils/
-│   ├── normalizeSong.js
-│   └── storage.js
-│
-├── App.jsx
-├── main.jsx
-└── index.css
-```
-
-### State Architecture
-
-| Context           | Responsibility                         |
-| ----------------- | -------------------------------------- |
-| `PlayerContext`   | Audio playback, queue and player state |
-| `PlaylistContext` | Playlist creation and management       |
-| `LibraryContext`  | Liked songs and favorites              |
-
-Small wrapper hooks provide convenient access to these contexts throughout the application.
+* Web app manifest
+* Service worker
+* Application icons
+* Browser installation support where supported
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-
-* **React 19**
-* **Vite 8**
-* **JavaScript (ES Modules)**
-* **React Router 7**
-
-### Styling
-
-* **Tailwind CSS 4**
-* Custom CSS design tokens
-* Responsive layouts
-* CSS gradients and ambient effects
-
-### UI & Motion
-
-* **Lucide React** — icons
-* **Framer Motion** — animations and transitions
-
-### Audio
-
-* **HTML5 Audio API**
-
-### Data & Persistence
-
-* JioSaavn-compatible music API
-* Browser `localStorage`
-
-The current package configuration uses React 19, Vite 8, Tailwind CSS 4, React Router 7, Framer Motion and Lucide React.
+| Technology        | Purpose                           |
+| ----------------- | --------------------------------- |
+| React             | UI framework                      |
+| TypeScript        | Type-safe application development |
+| Vite              | Development and build tooling     |
+| Tailwind CSS      | Styling and responsive UI         |
+| Framer Motion     | Animations and transitions        |
+| React Router      | Application routing               |
+| Web Storage API   | Local persistence                 |
+| Media Session API | Browser/device playback controls  |
+| Service Worker    | PWA functionality                 |
 
 ---
 
-## 🔌 Music Data
+## 🧠 Architecture
 
-VibeHai uses a configurable music API endpoint for search.
-
-The default endpoint is:
+VibeHai follows a component-based React architecture with clear separation between UI, application state, API communication, and utilities.
 
 ```text
-https://saavnapi-nine.vercel.app
+src/
+├── components/
+│   ├── layout/
+│   ├── media/
+│   └── player/
+│
+├── context/
+│   ├── LibraryContext.tsx
+│   ├── PlayerContext.tsx
+│   ├── ThemeContext.tsx
+│   └── ToastContext.tsx
+│
+├── hooks/
+├── lib/
+│   ├── format.ts
+│   ├── saavn.ts
+│   ├── storage.ts
+│   └── types.ts
+│
+├── pages/
+├── pwa/
+├── utils/
+│
+├── App.tsx
+├── main.tsx
+└── index.css
 ```
 
-The application can also use a custom endpoint through:
+### Core application layers
 
-```env
-VITE_JIOSAAVN_API=your-api-endpoint
-```
+**PlayerContext**
 
-Search requests are made through the application's service layer and normalized into a consistent song structure before reaching the UI.
+Centralizes playback state and behavior including queue management, shuffle/repeat, volume, playback errors, sleep timer, persistence, and Media Session integration.
 
-### Song Model
+**LibraryContext**
 
-Internally, music data is normalized into fields such as:
+Handles user library state and locally persisted library interactions.
 
-```text
-id
-title
-artist
-album
-cover
-audioUrl
-duration
-genre
-year
-liked
-```
+**`lib/saavn.ts`**
 
-This keeps the UI independent from the exact response structure of the external API.
+Provides the API integration layer with response normalization, source handling, request timeouts, and API host fallback behavior.
+
+**Storage layer**
+
+Keeps persistent browser state isolated from UI components.
+
+**Reusable components**
+
+Media cards, song rows, shelves, player controls, queue panels, modals, and layout components are designed to be reused across pages.
+
+---
+
+## 🔌 API & Playback
+
+VibeHai uses JioSaavn-compatible API services for music metadata and playback sources.
+
+The API layer includes:
+
+* Multiple API host fallbacks
+* Request timeout handling
+* Response normalization
+* Song/image/audio source normalization
+* Search aggregation
+* Playback source fallback
+* Error handling
+
+Because these services are external and can change independently of VibeHai, API availability is not guaranteed.
+
+---
+
+## 🔐 Privacy & Data
+
+VibeHai does not require:
+
+* Account creation
+* Login
+* A personal backend
+* A database
+
+Application preferences and local library/playback state are stored in the browser where applicable.
+
+Music metadata and playback sources are retrieved through external API services.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Requirements
 
-Make sure you have:
-
-* Node.js 18+
+* Node.js
 * npm
 
 ### Installation
 
 ```bash
 git clone https://github.com/ashutoshpalhare/VibeHai.git
-
 cd VibeHai
-
 npm install
 ```
 
-### Start Development Server
+### Start development server
 
 ```bash
 npm run dev
 ```
 
-Vite will start the development server and provide the local URL in your terminal.
+Vite will provide the local development URL in the terminal.
 
----
-
-## 📦 Production Build
-
-Create an optimized production build:
+### Production build
 
 ```bash
 npm run build
 ```
 
-Preview the production build locally:
+---
 
-```bash
-npm run preview
+## 📁 Project Structure
+
+```text
+VibeHai/
+├── public/
+│   ├── favicon.svg
+│   ├── icons.svg
+│   ├── manifest.webmanifest
+│   └── sw.js
+│
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── hooks/
+│   ├── lib/
+│   ├── pages/
+│   ├── pwa/
+│   └── utils/
+│
+├── index.html
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
 ```
 
-Run linting:
+---
 
-```bash
-npm run lint
-```
+## 🎯 Why VibeHai?
+
+VibeHai was built as more than a basic music-player UI.
+
+The project focuses on real application problems such as:
+
+* Managing complex player state
+* Maintaining a persistent playback queue
+* Handling unreliable external APIs
+* Falling back between playback sources
+* Synchronizing browser media controls
+* Preserving state between sessions
+* Building responsive reusable UI components
+* Handling loading, empty, and failure states
+* Keeping a growing React application maintainable
 
 ---
 
-## ⚙️ Environment Variables
+## 🧪 Current Status
 
-Create a `.env` file in the project root if you want to configure a custom music API:
+VibeHai is actively maintained as a personal development project.
 
-```env
-VITE_JIOSAAVN_API=https://your-api-endpoint
-```
-
-If the variable is not provided, VibeHai falls back to its configured default API endpoint.
+The current codebase has undergone a major architecture cleanup, including removal of obsolete legacy implementations and stabilization of the API and player layers.
 
 ---
 
-## 🎨 Design System
+## 🗺️ Future Ideas
 
-VibeHai follows a dark, immersive visual language built around:
+Potential future improvements include:
 
-* Near-black surfaces
-* Violet accents
-* Cyan highlights
-* Magenta gradients
-* Soft borders
-* Glass-like surfaces
-* Ambient background effects
-* Large typography
-* Rounded interactive components
-
-The design system is built with reusable CSS variables and utility classes rather than relying entirely on one-off styles.
-
-Typography uses:
-
-* **DM Sans** for primary interface text
-* **Space Grotesk** for display typography
-
----
-
-## 📱 Responsive Experience
-
-The interface is designed to adapt across:
-
-* Desktop
-* Laptop
-* Tablet
-* Mobile
-
-The application includes dedicated desktop/mobile navigation patterns and responsive music layouts.
-
-The UI also respects the user's `prefers-reduced-motion` setting to reduce animation for users who request less motion.
-
----
-
-## 🔐 Privacy & Data
-
-VibeHai does not currently require:
-
-* User accounts
-* Authentication
-* A traditional application database
-
-Personal library data such as liked songs and playlists is stored locally in the browser using `localStorage`.
-
-Music discovery and playback may communicate with the configured external music service.
-
----
-
-## 🗺️ Current Routes
-
-| Route      | Description            |
-| ---------- | ---------------------- |
-| `/`        | Home / music discovery |
-| `/search`  | Search music           |
-| `/library` | Personal library       |
-| `/liked`   | Liked songs            |
-
-Routing is handled using React Router.
-
----
-
-## 🚧 Project Status
-
-VibeHai is an actively evolving frontend project.
-
-The current focus is on improving:
-
-* Music discovery
-* Playback experience
-* Library management
-* Playlist workflows
-* Responsive UX
-* Visual polish
-* Reliability and edge-case handling
-
-Future improvements may include deeper personalization, richer playlist experiences, improved discovery flows, and additional music-platform functionality.
-
----
-
-## 🤝 Contributing
-
-Contributions, suggestions and improvements are welcome.
-
-### Contribution workflow
-
-1. Fork the repository
-2. Create a feature branch
-
-```bash
-git checkout -b feature/your-feature
-```
-
-3. Make your changes
-4. Run the available checks
-
-```bash
-npm run lint
-npm run build
-```
-
-5. Commit your changes
-
-```bash
-git commit -m "feat: add your feature"
-```
-
-6. Push your branch
-
-```bash
-git push origin feature/your-feature
-```
-
-7. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-See the [LICENSE](LICENSE) file for details.
+* More advanced recommendation logic
+* Better offline/PWA capabilities
+* More granular player preferences
+* Additional keyboard controls
+* Improved API resilience
+* Expanded accessibility coverage
+* More music discovery experiences
 
 ---
 
@@ -432,28 +289,21 @@ See the [LICENSE](LICENSE) file for details.
 
 **Ashutosh Palhare**
 
-Built with React, modern web technologies, and a passion for creating polished developer projects.
-
-* GitHub: [@ashutoshpalhare](https://github.com/ashutoshpalhare)
-
----
-
-## ⭐ Support
-
-If you find VibeHai interesting or useful:
-
-* ⭐ Star the repository
-* 🐛 Report bugs
-* 💡 Suggest improvements
-* 🔧 Contribute improvements
-* 📢 Share the project
+GitHub:
+https://github.com/ashutoshpalhare
 
 ---
 
-<div align="center">
+## 📄 License
 
-### 🎧 Find your vibe. Press play. Repeat.
+This project is licensed under the **MIT License**.
 
-**VibeHai** — Music, reimagined for the modern web.
+See [`LICENSE`](./LICENSE) for details.
 
-</div>
+---
+
+## ⚠️ Disclaimer
+
+VibeHai is a personal/open-source project created for learning and development purposes.
+
+Music metadata and playback functionality depend on external third-party services. VibeHai does not claim ownership of third-party music, artwork, metadata, or other copyrighted content accessed through those services.
