@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,8 +11,9 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,8 +22,12 @@
           colors: {
             vibe: {
               bg: '#08080c',
-              card: '#121218',
-              border: '#1e1e28',
+              surface: '#0c0c12',
+              elevated: '#12121a',
+              border: '#1a1a25',
+              'border-subtle': '#232330',
+            },
+            accent: {
               violet: '#8b5cf6',
               cyan: '#22d3ee',
               pink: '#ec4899',
@@ -30,7 +35,22 @@
           },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
-            display: ['Space Grotesk', 'sans-serif'],
+            display: ['Space Grotesk', 'Inter', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shimmer': 'shimmer 2s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-20px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            }
           }
         }
       }
@@ -38,244 +58,563 @@
   </script>
 
   <style>
+    :root {
+      --color-violet: #8b5cf6;
+      --color-cyan: #22d3ee;
+      --color-pink: #ec4899;
+    }
+
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
     body {
       background: #08080c;
       color: #f4f4f6;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
+
+    /* Gradient Text */
     .gradient-text {
       background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #f472b6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      background-size: 200% auto;
+      animation: gradient-shift 8s ease infinite;
     }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Glass Effects */
     .glass {
-      background: rgba(18, 18, 24, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(12, 12, 18, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
+
+    .glass-card {
+      background: linear-gradient(145deg, rgba(18, 18, 26, 0.8) 0%, rgba(12, 12, 18, 0.6) 100%);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px -15px rgba(139, 92, 246, 0.15);
+    }
+
+    /* Glow Effects */
+    .glow-violet {
+      box-shadow: 0 0 60px -15px rgba(139, 92, 246, 0.3);
+    }
+
     .hero-glow {
-      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.25), transparent);
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(34, 211, 238, 0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(236, 72, 153, 0.08), transparent);
+    }
+
+    /* Button Styles */
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.5);
+    }
+
+    .btn-primary:hover::before {
+      opacity: 1;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Code Block Styling */
+    .code-block {
+      background: linear-gradient(145deg, #0a0a0f 0%, #0f0f16 100%);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    .code-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+    }
+
+    /* Feature Icon Containers */
+    .icon-container {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(34, 211, 238, 0.05) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover .icon-container {
+      border-color: rgba(139, 92, 246, 0.3);
+      box-shadow: 0 0 30px -5px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Section Divider */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.06) 20%, rgba(255, 255, 255, 0.06) 80%, transparent 100%);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #08080c;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #232330;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2d2d3d;
+    }
+
+    /* Selection */
+    ::selection {
+      background: rgba(139, 92, 246, 0.3);
+      color: #fff;
+    }
+
+    /* Link Hover Effect */
+    .nav-link {
+      position: relative;
+      color: #a1a1aa;
+      transition: color 0.2s ease;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, #8b5cf6, #22d3ee);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover {
+      color: #fff;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Step Connector */
+    .step-connector {
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.3) 0%, rgba(34, 211, 238, 0.3) 100%);
+    }
+
+    /* Badge */
+    .badge {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    /* Tag/Pill */
+    .tech-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+    }
+
+    .tech-pill:hover {
+      background: rgba(139, 92, 246, 0.08);
+      border-color: rgba(139, 92, 246, 0.2);
+      transform: translateY(-1px);
     }
   </style>
 </head>
-<body class="font-sans antialiased">
+<body class="font-sans antialiased overflow-x-hidden">
 
   <!-- Navbar -->
   <header class="fixed top-0 inset-x-0 z-50 glass">
-    <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">V</div>
-        <span class="font-display font-semibold text-lg tracking-tight">VibeHai</span>
-      </div>
-      <nav class="hidden sm:flex items-center gap-6 text-sm text-zinc-400">
-        <a href="#features" class="hover:text-white transition">Features</a>
-        <a href="#tech" class="hover:text-white transition">Tech</a>
-        <a href="#run" class="hover:text-white transition">How to Run</a>
-        <a href="#api" class="hover:text-white transition">API</a>
-        <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" class="hover:text-white transition">GitHub</a>
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-all duration-300">
+          V
+        </div>
+        <span class="font-display font-semibold text-lg tracking-tight text-white">VibeHai</span>
+      </a>
+      
+      <nav class="hidden md:flex items-center gap-8 text-sm">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#tech" class="nav-link">Tech</a>
+        <a href="#run" class="nav-link">How to Run</a>
+        <a href="#api" class="nav-link">API</a>
+        <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" class="nav-link">GitHub</a>
       </nav>
+
       <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank"
-         class="text-sm font-medium px-4 py-2 rounded-full bg-white text-black hover:bg-zinc-200 transition">
+         class="hidden sm:flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-white text-black hover:bg-zinc-100 transition-all duration-300 hover:scale-105">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         View on GitHub
       </a>
     </div>
   </header>
 
   <!-- Hero -->
-  <section class="relative pt-32 pb-24 hero-glow">
-    <div class="max-w-4xl mx-auto px-5 text-center">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-violet-500/10 text-violet-300 border border-violet-500/20 mb-6">
-        <span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse"></span>
+  <section class="relative min-h-screen flex items-center justify-center hero-glow pt-20">
+    <!-- Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative max-w-5xl mx-auto px-6 py-20 text-center">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium badge mb-8 animate-float">
+        <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
         Open Source • Local-First • PWA Ready
       </div>
 
-      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
+      <!-- Headline -->
+      <h1 class="font-display text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-8">
         Music for every<br>
         <span class="gradient-text">mood & vibe</span>
       </h1>
 
-      <p class="text-lg text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-        VibeHai is a modern, Spotify-inspired music streaming web app built with React, TypeScript and Vite.
-        Discover songs, build playlists, enjoy a powerful player — all without any account.
+      <!-- Subheadline -->
+      <p class="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+        VibeHai is a modern, Spotify-inspired music streaming experience. 
+        Built with React and TypeScript. No accounts, no tracking — just pure music.
       </p>
 
+      <!-- CTAs -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
         <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank"
-           class="w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-500/25 transition">
-          Open Repository
+           class="btn-primary w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-white flex items-center justify-center gap-2">
+          <span class="relative z-10 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            Open Repository
+          </span>
         </a>
         <a href="#run"
-           class="w-full sm:w-auto px-8 py-3.5 rounded-full font-semibold border border-white/15 hover:bg-white/5 transition">
-          How to Run →
+           class="btn-secondary w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-white flex items-center justify-center gap-2">
+          How to Run
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
       </div>
+
+      <!-- Stats -->
+      <div class="mt-20 grid grid-cols-3 gap-8 max-w-lg mx-auto opacity-60">
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">0</div>
+          <div class="text-xs text-zinc-500 uppercase tracking-wider mt-1">Accounts needed</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">∞</div>
+          <div class="text-xs text-zinc-500 uppercase tracking-wider mt-1">Songs</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-white">100%</div>
+          <div class="text-xs text-zinc-500 uppercase tracking-wider mt-1">Open Source</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <span class="text-xs text-zinc-500 uppercase tracking-widest">Scroll</span>
+      <div class="w-px h-8 bg-gradient-to-b from-zinc-500 to-transparent"></div>
     </div>
   </section>
+
+  <div class="section-divider"></div>
 
   <!-- Features -->
-  <section id="features" class="py-20 border-t border-white/5">
-    <div class="max-w-6xl mx-auto px-5">
-      <div class="text-center mb-14">
-        <h2 class="font-display text-3xl sm:text-4xl font-bold mb-3">Everything you need</h2>
-        <p class="text-zinc-400">A complete music experience without the bloat</p>
+  <section id="features" class="py-32 relative">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-20">
+        <h2 class="font-display text-4xl sm:text-5xl font-bold mb-4 tracking-tight">Everything you need</h2>
+        <p class="text-lg text-zinc-400 max-w-xl mx-auto">A complete music experience without the bloat. Built for developers who appreciate craft.</p>
       </div>
 
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Feature cards -->
-        <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border hover:border-violet-500/30 transition">
-          <div class="w-10 h-10 rounded-xl bg-violet-500/15 flex items-center justify-center text-violet-400 mb-4 text-xl">🎵</div>
-          <h3 class="font-semibold text-lg mb-2">Real Music Discovery</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">Search songs, albums, artists and playlists powered by a JioSaavn-compatible API with smart fallbacks.</p>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Feature 1 -->
+        <div class="glass-card p-8 rounded-2xl group">
+          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
+            🎵
+          </div>
+          <h3 class="font-display font-semibold text-xl mb-3 text-white">Real Music Discovery</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Search songs, albums, and artists powered by a JioSaavn-compatible API with intelligent fallbacks and caching.
+          </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border hover:border-cyan-500/30 transition">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/15 flex items-center justify-center text-cyan-400 mb-4 text-xl">▶️</div>
-          <h3 class="font-semibold text-lg mb-2">Advanced Player</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">Queue, shuffle, repeat modes, seek, volume, sleep timer, Media Session API and persistent preferences.</p>
+        <!-- Feature 2 -->
+        <div class="glass-card p-8 rounded-2xl group">
+          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
+            ▶️
+          </div>
+          <h3 class="font-display font-semibold text-xl mb-3 text-white">Advanced Player</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Queue management, shuffle, repeat, seek, volume control, sleep timer, and Media Session API integration.
+          </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border hover:border-pink-500/30 transition">
-          <div class="w-10 h-10 rounded-xl bg-pink-500/15 flex items-center justify-center text-pink-400 mb-4 text-xl">❤️</div>
-          <h3 class="font-semibold text-lg mb-2">Personal Library</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">Liked songs, custom playlists, recently played — everything saved locally in your browser.</p>
+        <!-- Feature 3 -->
+        <div class="glass-card p-8 rounded-2xl group">
+          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
+            ❤️
+          </div>
+          <h3 class="font-display font-semibold text-xl mb-3 text-white">Personal Library</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Liked songs, custom playlists, and recently played tracks — all persisted locally in your browser storage.
+          </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border hover:border-violet-500/30 transition">
-          <div class="w-10 h-10 rounded-xl bg-violet-500/15 flex items-center justify-center text-violet-400 mb-4 text-xl">🌙</div>
-          <h3 class="font-semibold text-lg mb-2">Dark & Light Theme</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">Beautiful dual theme support with flash-free boot and system preference awareness.</p>
+        <!-- Feature 4 -->
+        <div class="glass-card p-8 rounded-2xl group">
+          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
+            🌙
+          </div>
+          <h3 class="font-display font-semibold text-xl mb-3 text-white">Dual Themes</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Beautiful dark and light modes with flash-free theme switching and system preference detection.
+          </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border hover:border-cyan-500/30 transition">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/15 flex items-center justify-center text-cyan-400 mb-4 text-xl">📱</div>
-          <h3 class="font-semibold text-lg mb-2">PWA Ready</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">Installable as an app, offline shell caching, custom service worker and proper web app manifest.</p>
+        <!-- Feature 5 -->
+        <div class="glass-card p-8 rounded-2xl group">
+          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
+            📱
+          </div>
+          <h3 class="font-display font-semibold text-xl mb-3 text-white">PWA Ready</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Install as a native app, offline shell caching, custom service worker, and proper web app manifest support.
+          </p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border hover:border-pink-500/30 transition">
-          <div class="w-10 h-10 rounded-xl bg-pink-500/15 flex items-center justify-center text-pink-400 mb-4 text-xl">⌨️</div>
-          <h3 class="font-semibold text-lg mb-2">Keyboard Shortcuts</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">Full keyboard support for playback control and navigation so you never need to leave the keyboard.</p>
+        <!-- Feature 6 -->
+        <div class="glass-card p-8 rounded-2xl group">
+          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
+            ⌨️
+          </div>
+          <h3 class="font-display font-semibold text-xl mb-3 text-white">Keyboard First</h3>
+          <p class="text-sm text-zinc-400 leading-relaxed">
+            Full keyboard shortcut support for playback control and navigation. Never leave your home row.
+          </p>
         </div>
       </div>
     </div>
   </section>
+
+  <div class="section-divider"></div>
 
   <!-- Tech Stack -->
-  <section id="tech" class="py-20 border-t border-white/5">
-    <div class="max-w-4xl mx-auto px-5 text-center">
-      <h2 class="font-display text-3xl font-bold mb-3">Built with modern tech</h2>
-      <p class="text-zinc-400 mb-10">Clean architecture focused on maintainability and performance</p>
+  <section id="tech" class="py-32 relative">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="font-display text-4xl font-bold mb-4 tracking-tight">Built with modern tech</h2>
+      <p class="text-lg text-zinc-400 mb-12">Clean architecture focused on maintainability and developer experience</p>
 
       <div class="flex flex-wrap justify-center gap-3">
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">React 19</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">TypeScript</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">Vite 7</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">Tailwind CSS 4</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">Framer Motion</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">React Router 7</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">HTML5 Audio</span>
-        <span class="px-4 py-2 rounded-full text-sm bg-white/5 border border-white/10">PWA</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">React 19</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">TypeScript</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">Vite 7</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">Tailwind CSS 4</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">Framer Motion</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">React Router 7</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">HTML5 Audio</span>
+        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">PWA</span>
       </div>
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
   <!-- How to Run -->
-  <section id="run" class="py-20 border-t border-white/5">
-    <div class="max-w-3xl mx-auto px-5">
-      <div class="text-center mb-12">
-        <h2 class="font-display text-3xl font-bold mb-3">How to Run</h2>
-        <p class="text-zinc-400">Get VibeHai running locally in under a minute</p>
+  <section id="run" class="py-32 relative">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-4xl font-bold mb-4 tracking-tight">How to Run</h2>
+        <p class="text-lg text-zinc-400">Get VibeHai running locally in under a minute</p>
       </div>
 
       <div class="space-y-6">
-        <div class="p-5 rounded-2xl bg-vibe-card border border-vibe-border">
-          <div class="text-xs font-medium text-violet-400 mb-2">1. Clone the repository</div>
-          <pre class="text-sm text-zinc-300 overflow-x-auto"><code>git clone https://github.com/ashutoshpalhare/VibeHai.git
-cd VibeHai</code></pre>
+        <!-- Step 1 -->
+        <div class="relative">
+          <div class="flex items-start gap-6">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-xs font-bold text-violet-300">1</div>
+              <div class="w-px h-full step-connector mt-2"></div>
+            </div>
+            <div class="flex-1 pb-8">
+              <h3 class="font-semibold text-white mb-3">Clone the repository</h3>
+              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
+                <code>git clone https://github.com/ashutoshpalhare/VibeHai.git<br>cd VibeHai</code>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="p-5 rounded-2xl bg-vibe-card border border-vibe-border">
-          <div class="text-xs font-medium text-violet-400 mb-2">2. Install dependencies</div>
-          <pre class="text-sm text-zinc-300 overflow-x-auto"><code>npm install</code></pre>
+        <!-- Step 2 -->
+        <div class="relative">
+          <div class="flex items-start gap-6">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300">2</div>
+              <div class="w-px h-full step-connector mt-2"></div>
+            </div>
+            <div class="flex-1 pb-8">
+              <h3 class="font-semibold text-white mb-3">Install dependencies</h3>
+              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
+                <code>npm install</code>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="p-5 rounded-2xl bg-vibe-card border border-vibe-border">
-          <div class="text-xs font-medium text-violet-400 mb-2">3. Start development server</div>
-          <pre class="text-sm text-zinc-300 overflow-x-auto"><code>npm run dev</code></pre>
+        <!-- Step 3 -->
+        <div class="relative">
+          <div class="flex items-start gap-6">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-pink-500/20 border border-pink-500/30 flex items-center justify-center text-xs font-bold text-pink-300">3</div>
+              <div class="w-px h-full step-connector mt-2"></div>
+            </div>
+            <div class="flex-1 pb-8">
+              <h3 class="font-semibold text-white mb-3">Start development server</h3>
+              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
+                <code>npm run dev</code>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="p-5 rounded-2xl bg-vibe-card border border-vibe-border">
-          <div class="text-xs font-medium text-violet-400 mb-2">4. Production build (optional)</div>
-          <pre class="text-sm text-zinc-300 overflow-x-auto"><code>npm run build
-npm run preview</code></pre>
+        <!-- Step 4 -->
+        <div class="relative">
+          <div class="flex items-start gap-6">
+            <div class="flex flex-col items-center">
+              <div class="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-xs font-bold text-violet-300">4</div>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold text-white mb-3">Production build (optional)</h3>
+              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
+                <code>npm run build<br>npm run preview</code>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <p class="mt-8 text-sm text-zinc-500 text-center">
-        Requires Node.js 18+ and npm
+      <p class="mt-12 text-center text-sm text-zinc-500">
+        Requires <span class="text-zinc-400">Node.js 18+</span> and <span class="text-zinc-400">npm</span>
       </p>
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
   <!-- API -->
-  <section id="api" class="py-20 border-t border-white/5">
-    <div class="max-w-3xl mx-auto px-5">
-      <div class="text-center mb-12">
-        <h2 class="font-display text-3xl font-bold mb-3">Music API</h2>
-        <p class="text-zinc-400">Powered by public JioSaavn-compatible endpoints</p>
+  <section id="api" class="py-32 relative">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-4xl font-bold mb-4 tracking-tight">Music API</h2>
+        <p class="text-lg text-zinc-400">Powered by public JioSaavn-compatible endpoints</p>
       </div>
 
-      <div class="p-6 rounded-2xl bg-vibe-card border border-vibe-border space-y-4 text-sm text-zinc-300 leading-relaxed">
-        <p>
-          VibeHai uses publicly available JioSaavn-compatible APIs to fetch song metadata, album/artist information and playback URLs.
+      <div class="glass-card rounded-2xl p-8 space-y-6">
+        <p class="text-zinc-300 leading-relaxed">
+          VibeHai uses publicly available JioSaavn-compatible APIs to fetch song metadata, album/artist information, and playback URLs.
         </p>
-        <p>
-          The app includes multiple host fallbacks, request timeouts and response normalization so it remains resilient when one endpoint is unavailable.
+        <p class="text-zinc-400 leading-relaxed text-sm">
+          The app includes multiple host fallbacks, request timeouts, and response normalization to remain resilient when endpoints are unavailable.
         </p>
-        <p>
-          You can optionally override the API base URL using an environment variable:
-        </p>
-        <pre class="bg-black/40 p-4 rounded-xl text-violet-300 overflow-x-auto"><code>VITE_JIOSAAVN_API=https://your-custom-endpoint</code></pre>
-        <p class="text-zinc-500 text-xs">
+        <div class="border-t border-white/5 pt-6">
+          <p class="text-sm text-zinc-400 mb-3">Override the API base using an environment variable:</p>
+          <div class="code-block rounded-xl p-4 font-mono text-sm text-violet-300 overflow-x-auto">
+            <code>VITE_JIOSAAVN_API=https://your-custom-endpoint</code>
+          </div>
+        </div>
+        <p class="text-xs text-zinc-500 border-t border-white/5 pt-4">
           Note: These are third-party services. Availability and terms can change independently of VibeHai.
         </p>
       </div>
     </div>
   </section>
 
+  <div class="section-divider"></div>
+
   <!-- Credit / About -->
-  <section class="py-20 border-t border-white/5">
-    <div class="max-w-2xl mx-auto px-5 text-center">
-      <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-violet-500/30">
+  <section class="py-32 relative">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <div class="w-20 h-20 mx-auto mb-8 rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-3xl font-bold text-white shadow-2xl shadow-violet-500/20">
         AP
       </div>
-      <h2 class="font-display text-2xl font-bold mb-2">Built by Ashutosh Palhare</h2>
-      <p class="text-zinc-400 mb-6 leading-relaxed">
-        Frontend-focused full-stack developer from India.
-        VibeHai is an open-source project created for learning, experimentation and sharing a polished music experience with the community.
+      <h2 class="font-display text-3xl font-bold mb-3 tracking-tight">Built by Ashutosh Palhare</h2>
+      <p class="text-zinc-400 mb-8 leading-relaxed max-w-md mx-auto">
+        Frontend-focused full-stack developer from India. VibeHai is an open-source project created for learning, experimentation, and sharing a polished music experience with the community.
       </p>
       <div class="flex justify-center gap-4">
         <a href="https://github.com/ashutoshpalhare" target="_blank"
-           class="px-5 py-2.5 rounded-full text-sm font-medium border border-white/15 hover:bg-white/5 transition">
+           class="btn-secondary px-6 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
           GitHub
         </a>
         <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank"
-           class="px-5 py-2.5 rounded-full text-sm font-medium bg-white text-black hover:bg-zinc-200 transition">
-          Star the Repo ⭐
+           class="btn-primary px-6 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2">
+          <span class="relative z-10 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            Star the Repo
+          </span>
         </a>
       </div>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="py-10 border-t border-white/5">
-    <div class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
-      <div class="flex items-center gap-2">
-        <div class="w-5 h-5 rounded-md bg-gradient-to-br from-violet-500 to-pink-500"></div>
-        <span>VibeHai</span>
+  <footer class="py-12 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-pink-500"></div>
+        <span class="font-display font-semibold text-zinc-300">VibeHai</span>
       </div>
-      <p>MIT License • Made with ❤️ by Ashutosh Palhare</p>
+      <p class="text-sm text-zinc-500">MIT License • Made with precision by Ashutosh Palhare</p>
     </div>
   </footer>
 
