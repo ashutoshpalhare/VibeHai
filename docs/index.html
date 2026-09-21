@@ -1,620 +1,1306 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VibeHai — Music for every mood</title>
+  <title>VibeHai — Music for every mood &amp; vibe</title>
   <meta name="description" content="VibeHai is a modern, local-first music streaming web app inspired by Spotify. Built with React, TypeScript & Vite by Ashutosh Palhare." />
   <meta name="theme-color" content="#08080c" />
-  <link rel="icon" href="../public/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%2308080c'/%3E%3Cpath d='M8.6 9.4 16 23.2 23.4 9.4' fill='none' stroke='%23a78bfa' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" type="image/svg+xml" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind -->
+  <!-- Tailwind (utilities only — the layout system below is hand-written CSS) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            vibe: {
-              bg: '#08080c',
-              surface: '#0c0c12',
-              elevated: '#12121a',
-              border: '#1a1a25',
-              'border-subtle': '#232330',
-            },
-            accent: {
-              violet: '#8b5cf6',
-              cyan: '#22d3ee',
-              pink: '#ec4899',
-            }
-          },
           fontFamily: {
             sans: ['Inter', 'system-ui', 'sans-serif'],
-            display: ['Space Grotesk', 'Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
-          animation: {
-            'float': 'float 6s ease-in-out infinite',
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'shimmer': 'shimmer 2s linear infinite',
+          colors: {
+            vibe: { bg: '#08080c', panel: '#0d0d13', violet: '#8b5cf6', cyan: '#22d3ee', pink: '#ec4899' },
           },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-20px)' },
-            },
-            shimmer: {
-              '0%': { backgroundPosition: '-200% 0' },
-              '100%': { backgroundPosition: '200% 0' },
-            }
-          }
-        }
-      }
-    }
+        },
+      },
+    };
   </script>
 
   <style>
+    /* ============================================================
+       VibeHai — design system
+       Surface: matte black anodized studio-rack faceplate
+       ============================================================ */
+
     :root {
-      --color-violet: #8b5cf6;
-      --color-cyan: #22d3ee;
-      --color-pink: #ec4899;
+      --bg: #08080c;
+      --panel: #0d0d13;
+      --raise: #121219;
+      --line: rgba(255, 255, 255, 0.08);
+      --line2: rgba(255, 255, 255, 0.16);
+      --txt: #f2f2f5;
+      --mut: #9b9bab;
+      --dim: #7b7b8a;
+      --vio: #8b5cf6;
+      --viol: #a78bfa;
+      --cy: #22d3ee;
+      --mg: #ec4899;
+      --grad: linear-gradient(100deg, #a78bfa, #22d3ee 45%, #f472b6);
+      --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
-    * {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 104px;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
-      background: #08080c;
-      color: #f4f4f6;
-      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      margin: 0;
+      background: var(--bg);
+      color: var(--txt);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
 
-    /* Gradient Text */
-    .gradient-text {
-      background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #f472b6 100%);
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, h4, p { margin: 0; }
+
+    ::selection { background: rgba(139, 92, 246, 0.35); color: #fff; }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #06060a; }
+    ::-webkit-scrollbar-thumb { background: #212130; border-radius: 8px; border: 2px solid #06060a; }
+    ::-webkit-scrollbar-thumb:hover { background: #33334a; }
+
+    /* ---------- type ---------- */
+
+    .display {
+      font-family: "Space Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.035em;
+      line-height: 1.03;
+      font-weight: 700;
+    }
+
+    .mono {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .legend {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .gt {
+      background: var(--grad);
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       background-clip: text;
-      background-size: 200% auto;
-      animation: gradient-shift 8s ease infinite;
+      color: transparent;
     }
 
-    @keyframes gradient-shift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
+    /* ---------- layout primitives ---------- */
+
+    .shell {
+      width: 100%;
+      max-width: 1180px;
+      margin-inline: auto;
+      padding-inline: 22px;
     }
 
-    /* Glass Effects */
-    .glass {
-      background: rgba(12, 12, 18, 0.7);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+    @media (min-width: 768px) {
+      .shell { padding-inline: 48px; }
     }
 
-    .glass-card {
-      background: linear-gradient(145deg, rgba(18, 18, 26, 0.8) 0%, rgba(12, 12, 18, 0.6) 100%);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    .plate {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.014));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      backdrop-filter: blur(16px) saturate(130%);
+      -webkit-backdrop-filter: blur(16px) saturate(130%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 30px 70px -45px rgba(0, 0, 0, 0.95);
     }
 
-    .glass-card:hover {
-      border-color: rgba(139, 92, 246, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 20px 40px -15px rgba(139, 92, 246, 0.15);
+    .hair {
+      height: 1px;
+      border: 0;
+      background: linear-gradient(90deg, transparent, var(--line2) 12%, var(--line2) 88%, transparent);
     }
 
-    /* Glow Effects */
-    .glow-violet {
-      box-shadow: 0 0 60px -15px rgba(139, 92, 246, 0.3);
+    /* film grain over the whole page */
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      pointer-events: none;
+      opacity: 0.2;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
     }
 
-    .hero-glow {
-      background: 
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 92, 246, 0.15), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(34, 211, 238, 0.08), transparent),
-        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(236, 72, 153, 0.08), transparent);
+    /* ---------- fixed rack rail (xl+) ---------- */
+
+    .rail {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      z-index: 45;
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, #0a0a10, #07070b);
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 88px 0 26px;
     }
 
-    /* Button Styles */
-    .btn-primary {
-      background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+    .rail .screw {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #4a4a5c, #14141c 70%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .rail .vlabel {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      letter-spacing: 0.42em;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      color: var(--dim);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    .rail .ticks { display: flex; flex-direction: column; gap: 7px; align-items: center; }
+    .rail .ticks i { width: 12px; height: 1px; background: var(--line2); display: block; }
+    .rail .ticks i:nth-child(5n + 1) { width: 20px; background: rgba(167, 139, 250, 0.5); }
+
+    @media (min-width: 1280px) {
+      .rail { display: flex; }
+      body { padding-left: 60px; }
+    }
+
+    /* ---------- top bar ---------- */
+
+    .topbar {
+      position: fixed;
+      inset-inline: 0;
+      top: 0;
+      z-index: 50;
+      background: rgba(8, 8, 12, 0.72);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar::before {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      height: 2px;
+      background: var(--grad);
+      opacity: 0.55;
+    }
+
+    .topbar-in { height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+
+    .brand { display: flex; align-items: center; gap: 11px; }
+
+    .brand-name {
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.03em;
+    }
+
+    .nav { display: none; align-items: center; gap: 30px; }
+
+    @media (min-width: 860px) {
+      .nav { display: flex; }
+    }
+
+    .navlink {
       position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
+      font-size: 13.5px;
+      color: var(--mut);
+      transition: color 0.25s var(--ease);
     }
 
-    .btn-primary::before {
-      content: '';
+    .navlink::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -7px;
+      height: 1px;
+      width: 0;
+      background: var(--grad);
+      transition: width 0.3s var(--ease);
+    }
+
+    .navlink:hover { color: #fff; }
+    .navlink:hover::after { width: 100%; }
+
+    /* equalizer */
+    .eq { display: flex; align-items: flex-end; gap: 2px; height: 13px; }
+    .eq i {
+      display: block;
+      width: 2.5px;
+      border-radius: 2px;
+      background: var(--grad);
+      animation: eq 1.15s var(--ease) infinite;
+    }
+    .eq i:nth-child(1) { height: 6px; animation-delay: -0.2s; }
+    .eq i:nth-child(2) { height: 12px; animation-delay: -0.55s; }
+    .eq i:nth-child(3) { height: 8px; animation-delay: -0.85s; }
+
+    @keyframes eq {
+      0%, 100% { transform: scaleY(0.45); }
+      50% { transform: scaleY(1); }
+    }
+
+    /* ---------- buttons ---------- */
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      height: 46px;
+      padding: 0 22px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease),
+        background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.25s var(--ease);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:focus-visible { outline: 2px solid var(--viol); outline-offset: 3px; }
+
+    .btn-1 {
+      color: #fff;
+      border: 1px solid transparent;
+      background:
+        linear-gradient(180deg, #191922, #0f0f16) padding-box,
+        var(--grad) border-box;
+      box-shadow: 0 14px 34px -18px rgba(139, 92, 246, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    }
+
+    .btn-1:hover {
+      box-shadow: 0 18px 44px -16px rgba(139, 92, 246, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      background:
+        linear-gradient(180deg, #20202c, #14141d) padding-box,
+        var(--grad) border-box;
+    }
+
+    .btn-2 {
+      color: var(--txt);
+      border: 1px solid var(--line2);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .btn-2:hover { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.06); }
+
+    .btn-sm { height: 38px; padding: 0 16px; font-size: 12.5px; }
+
+    /* ---------- chips ---------- */
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--mut);
+      font-size: 13px;
+      transition: transform 0.25s var(--ease), color 0.25s var(--ease),
+        border-color 0.25s var(--ease), background-color 0.25s var(--ease);
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+      color: #fff;
+      border-color: rgba(167, 139, 250, 0.45);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .chip-sm { padding: 6px 11px; font-size: 11px; }
+
+    /* ---------- hero ---------- */
+
+    .hero { position: relative; overflow: hidden; padding: 138px 0 76px; }
+
+    @media (min-width: 900px) {
+      .hero { padding: 176px 0 104px; }
+    }
+
+    .hero-bg {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      background-size: cover;
+      background-position: center right;
+      opacity: 0.5;
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.8) 55%, transparent 96%);
+      mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.8) 55%, transparent 96%);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.5);
+    .hero-scrim {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, #08080c 6%, rgba(8, 8, 12, 0.88) 44%, rgba(8, 8, 12, 0.42) 74%, rgba(8, 8, 12, 0.66) 100%),
+        linear-gradient(180deg, rgba(8, 8, 12, 0.7), transparent 30%, transparent 62%, #08080c 100%);
     }
 
-    .btn-primary:hover::before {
-      opacity: 1;
+    .aurora {
+      position: absolute;
+      top: -22%;
+      left: -12%;
+      right: -12%;
+      height: 78%;
+      filter: blur(26px);
+      opacity: 0.85;
+      background:
+        radial-gradient(46% 52% at 26% 34%, rgba(139, 92, 246, 0.26), transparent 72%),
+        radial-gradient(40% 46% at 74% 22%, rgba(34, 211, 238, 0.16), transparent 72%),
+        radial-gradient(38% 44% at 58% 62%, rgba(236, 72, 153, 0.14), transparent 74%);
+      animation: drift 20s ease-in-out infinite alternate;
     }
 
-    .btn-secondary {
+    @keyframes drift {
+      from { transform: translate3d(-2%, -1%, 0) scale(1); }
+      to { transform: translate3d(3%, 2%, 0) scale(1.08); }
+    }
+
+    .hero-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 54px;
+      align-items: center;
+    }
+
+    @media (min-width: 980px) {
+      .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 56px; }
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 15px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mut);
     }
 
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.12);
+    .pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--viol);
+      box-shadow: 0 0 10px rgba(167, 139, 250, 0.9);
+      animation: pulse 2.6s ease-in-out infinite;
     }
 
-    /* Code Block Styling */
-    .code-block {
-      background: linear-gradient(145deg, #0a0a0f 0%, #0f0f16 100%);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      position: relative;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
     }
 
-    .code-block::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+    .hero h1 { margin: 26px 0 22px; font-size: clamp(2.6rem, 6.4vw, 4.9rem); }
+
+    .lede {
+      max-width: 34rem;
+      color: var(--mut);
+      font-size: clamp(15.5px, 1.5vw, 17.5px);
+      line-height: 1.7;
     }
 
-    /* Feature Icon Containers */
-    .icon-container {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(34, 211, 238, 0.05) 100%);
-      border: 1px solid rgba(139, 92, 246, 0.15);
-      transition: all 0.3s ease;
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+
+    .plate-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 26px 44px;
+      margin-top: 44px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
     }
 
-    .glass-card:hover .icon-container {
-      border-color: rgba(139, 92, 246, 0.3);
-      box-shadow: 0 0 30px -5px rgba(139, 92, 246, 0.2);
+    .plate-strip div span { display: block; margin-bottom: 8px; }
+
+    .plate-strip b {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--txt);
+      letter-spacing: -0.01em;
     }
 
-    /* Section Divider */
-    .section-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.06) 20%, rgba(255, 255, 255, 0.06) 80%, transparent 100%);
-    }
+    /* ---------- player card ---------- */
 
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #08080c;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #232330;
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #2d2d3d;
-    }
-
-    /* Selection */
-    ::selection {
-      background: rgba(139, 92, 246, 0.3);
-      color: #fff;
-    }
-
-    /* Link Hover Effect */
-    .nav-link {
-      position: relative;
-      color: #a1a1aa;
-      transition: color 0.2s ease;
-    }
-
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: linear-gradient(90deg, #8b5cf6, #22d3ee);
-      transition: width 0.3s ease;
-    }
-
-    .nav-link:hover {
-      color: #fff;
-    }
-
-    .nav-link:hover::after {
+    .player {
+      padding: 20px;
+      max-width: 440px;
       width: 100%;
+      margin-inline: auto;
+      transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
     }
 
-    /* Step Connector */
-    .step-connector {
-      background: linear-gradient(180deg, rgba(139, 92, 246, 0.3) 0%, rgba(34, 211, 238, 0.3) 100%);
+    .player:hover {
+      transform: translateY(-4px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 44px 80px -44px rgba(139, 92, 246, 0.55);
     }
 
-    /* Badge */
-    .badge {
-      background: rgba(139, 92, 246, 0.08);
-      border: 1px solid rgba(139, 92, 246, 0.15);
+    .player-top { display: flex; gap: 18px; align-items: center; }
+
+    .art {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      flex: none;
+      border-radius: 14px;
+      overflow: hidden;
+      background: radial-gradient(circle at 30% 25%, #6d4bd6, #1b1b28 72%);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 14px 30px -18px rgba(0, 0, 0, 0.9);
     }
 
-    /* Tag/Pill */
-    .tech-pill {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      transition: all 0.2s ease;
+    .art img { width: 100%; height: 100%; object-fit: cover; }
+
+    .meta { min-width: 0; }
+    .meta .tname { font-size: 21px; margin: 10px 0 5px; }
+    .meta .tsub {
+      color: var(--mut);
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .tech-pill:hover {
-      background: rgba(139, 92, 246, 0.08);
-      border-color: rgba(139, 92, 246, 0.2);
+    .chiprow { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+    .prog { margin-top: 22px; }
+
+    .bar { position: relative; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, 0.1); }
+
+    .bar i {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 32%;
+      border-radius: 3px;
+      background: var(--grad);
+    }
+
+    .bar i::after {
+      content: "";
+      position: absolute;
+      right: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 12px rgba(167, 139, 250, 0.95);
+    }
+
+    .times {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--dim);
+    }
+
+    .controls { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; }
+
+    .ctl {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      color: var(--mut);
+      background: transparent;
+      border: 1px solid transparent;
+      transition: color 0.25s var(--ease), background-color 0.25s var(--ease),
+        border-color 0.25s var(--ease), transform 0.25s var(--ease);
+    }
+
+    .ctl:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--line);
       transform: translateY(-1px);
+    }
+
+    .ctl-play {
+      width: 54px;
+      height: 54px;
+      background: #fff;
+      color: #0a0a0f;
+      box-shadow: 0 12px 30px -14px rgba(255, 255, 255, 0.6);
+    }
+
+    .ctl-play:hover {
+      background: #fff;
+      color: #0a0a0f;
+      border-color: transparent;
+      transform: scale(1.05);
+    }
+
+    .player-foot {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- section seams + heads ---------- */
+
+    .seam { display: flex; align-items: center; gap: 18px; padding-top: 8px; }
+    .seam::before, .seam::after { content: ""; flex: 1; height: 1px; }
+    .seam::before { background: linear-gradient(90deg, transparent, var(--line2)); }
+    .seam::after { background: linear-gradient(270deg, transparent, var(--line2)); }
+    .seam span { display: inline-flex; align-items: center; gap: 10px; }
+
+    .seam span::before,
+    .seam span::after {
+      content: "";
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(167, 139, 250, 0.55);
+    }
+
+    section { position: relative; }
+
+    .block { padding: 92px 0; }
+
+    @media (min-width: 900px) {
+      .block { padding: 118px 0; }
+    }
+
+    .shead { display: grid; gap: 22px; margin-bottom: 56px; }
+
+    @media (min-width: 900px) {
+      .shead { grid-template-columns: 1.15fr 0.85fr; align-items: end; gap: 48px; }
+    }
+
+    .shead h2 { font-size: clamp(2rem, 3.6vw, 2.9rem); margin-top: 18px; }
+    .shead p { color: var(--mut); font-size: 15.5px; max-width: 32rem; }
+
+    /* ---------- feature ledger ---------- */
+
+    .ledger { border-bottom: 1px solid var(--line); }
+
+    .lrow {
+      position: relative;
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      column-gap: 22px;
+      row-gap: 12px;
+      padding: 32px 0;
+      border-top: 1px solid var(--line);
+      transition: background-color 0.35s var(--ease);
+    }
+
+    .lrow::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: -1px;
+      height: 1px;
+      width: 0;
+      background: var(--grad);
+      transition: width 0.55s var(--ease);
+    }
+
+    .lrow:hover { background: linear-gradient(90deg, rgba(139, 92, 246, 0.07), transparent 62%); }
+    .lrow:hover::after { width: 100%; }
+
+    .lnum {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--dim);
+      padding-top: 6px;
+      transition: color 0.3s var(--ease);
+    }
+
+    .lrow:hover .lnum { color: var(--viol); }
+
+    .lrow h3 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      transition: color 0.3s var(--ease);
+    }
+
+    .lrow p { grid-column: 2; color: var(--mut); font-size: 14.5px; max-width: 44rem; }
+
+    .lic {
+      grid-column: 2;
+      color: var(--dim);
+      transition: color 0.3s var(--ease), transform 0.35s var(--ease);
+    }
+
+    .lrow:hover .lic { color: var(--viol); transform: translateX(3px); }
+
+    @media (min-width: 940px) {
+      .lrow { grid-template-columns: 84px 320px 1fr 60px; align-items: start; padding: 38px 0; column-gap: 34px; }
+      .lnum { font-size: 26px; padding-top: 2px; letter-spacing: 0; }
+      .lrow p { grid-column: 3; font-size: 15px; }
+      .lic { grid-column: 4; justify-self: end; padding-top: 4px; }
+    }
+
+    /* ---------- tech stack ---------- */
+
+    .techwrap { display: grid; gap: 40px; }
+
+    @media (min-width: 940px) {
+      .techwrap { grid-template-columns: 300px 1fr; gap: 64px; align-items: start; }
+    }
+
+    .speclist { border-top: 1px solid var(--line); }
+
+    .speclist div {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+    }
+
+    .speclist span { color: var(--dim); letter-spacing: 0.08em; }
+    .speclist b { color: var(--txt); font-weight: 500; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    /* ---------- run / terminal ---------- */
+
+    .runband { position: relative; overflow: hidden; }
+
+    .runband-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.24;
+      filter: grayscale(0.35);
+    }
+
+    .runband-scrim {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, #08080c, rgba(8, 8, 12, 0.72) 32%, rgba(8, 8, 12, 0.82) 70%, #08080c),
+        radial-gradient(60% 60% at 80% 20%, rgba(34, 211, 238, 0.1), transparent 70%);
+    }
+
+    .runcols { position: relative; display: grid; gap: 44px; }
+
+    @media (min-width: 940px) {
+      .runcols { grid-template-columns: 0.8fr 1.2fr; gap: 64px; align-items: start; }
+    }
+
+    .runcols .sticky { position: sticky; top: 110px; }
+
+    .term { overflow: hidden; }
+
+    .term-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .term-bar i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+    .term-bar i:nth-child(1) { background: #3a3a48; }
+    .term-bar i:nth-child(2) { background: #2c2c38; }
+    .term-bar i:nth-child(3) { background: #232330; }
+    .term-bar span { margin-left: 10px; }
+
+    .steps { padding: 8px 22px 22px; }
+
+    .step { padding: 20px 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.08); }
+    .step:last-child { border-bottom: 0; }
+    .step .legend { display: block; margin-bottom: 12px; color: var(--viol); }
+
+    .step pre {
+      margin: 0;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12.5px;
+      line-height: 2;
+      color: #d8d8e2;
+    }
+
+    .step pre .c { color: var(--dim); }
+    .step pre .p { color: var(--viol); }
+
+    .note {
+      margin-top: 22px;
+      color: var(--dim);
+      font-size: 12.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .note::before { content: ""; width: 18px; height: 1px; background: var(--line2); }
+
+    /* ---------- api ---------- */
+
+    .apicols { display: grid; gap: 44px; }
+
+    @media (min-width: 940px) {
+      .apicols { grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    }
+
+    .apibody { display: grid; gap: 20px; }
+    .apibody p { color: var(--mut); font-size: 15px; }
+
+    .codeblock {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #06060a;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12.5px;
+      color: var(--viol);
+    }
+
+    .finenote {
+      color: var(--dim);
+      font-size: 12.5px;
+      line-height: 1.7;
+      border-left: 1px solid var(--line2);
+      padding-left: 14px;
+    }
+
+    /* ---------- about ---------- */
+
+    .aboutcard { display: grid; gap: 30px; padding: 34px; align-items: center; }
+
+    @media (min-width: 860px) {
+      .aboutcard { grid-template-columns: 132px 1fr; gap: 46px; padding: 46px; }
+    }
+
+    .initials {
+      width: 108px;
+      height: 108px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 34px;
+      letter-spacing: -0.04em;
+      color: #fff;
+      background: linear-gradient(150deg, rgba(139, 92, 246, 0.9), rgba(236, 72, 153, 0.75) 70%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 22px 50px -24px rgba(139, 92, 246, 0.85);
+    }
+
+    .aboutcard h2 { font-size: clamp(1.7rem, 3vw, 2.35rem); }
+    .aboutcard p { color: var(--mut); margin: 14px 0 26px; max-width: 40rem; font-size: 15.5px; }
+
+    /* ---------- footer ---------- */
+
+    footer { border-top: 1px solid var(--line); padding: 34px 0 44px; }
+
+    .foot {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    @media (min-width: 720px) {
+      .foot { flex-direction: row; align-items: center; }
+    }
+
+    .footlinks { display: flex; gap: 24px; }
+
+    /* ---------- states + small screens ---------- */
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--viol);
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 430px) {
+      .pill { letter-spacing: 0.13em; font-size: 9px; }
+      .cta .btn { flex: 1 1 100%; }
+      .plate-strip { gap: 20px 28px; }
+      .player { padding: 16px; }
+      .art { width: 78px; height: 78px; }
+    }
+
+    /* ---------- accessibility ---------- */
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
-<body class="font-sans antialiased overflow-x-hidden">
 
-  <!-- Navbar -->
-  <header class="fixed top-0 inset-x-0 z-50 glass">
-    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-all duration-300">
-          V
-        </div>
-        <span class="font-display font-semibold text-lg tracking-tight text-white">VibeHai</span>
+<body class="font-sans antialiased">
+
+  <!-- shared gradient definitions for the hand-drawn mark -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="vg" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#a78bfa" />
+        <stop offset="0.5" stop-color="#22d3ee" />
+        <stop offset="1" stop-color="#f472b6" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="grain"></div>
+
+  <!-- rack rail -->
+  <aside class="rail">
+    <span class="screw"></span>
+    <span class="vlabel">Open Source · Local-First · MIT</span>
+    <div class="ticks">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <span class="screw"></span>
+  </aside>
+
+  <!-- ============================ top bar ============================ -->
+  <header class="topbar">
+    <div class="shell topbar-in">
+      <a class="brand" href="#top">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="30" height="30" rx="9" fill="rgba(255,255,255,0.03)" stroke="url(#vg)" stroke-width="1.5" />
+          <path d="M8.6 9.4 16 23.2 23.4 9.4" stroke="url(#vg)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="16" cy="23.4" r="1.9" fill="#22d3ee" />
+        </svg>
+        <span class="brand-name">VibeHai</span>
       </a>
-      
-      <nav class="hidden md:flex items-center gap-8 text-sm">
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#tech" class="nav-link">Tech</a>
-        <a href="#run" class="nav-link">How to Run</a>
-        <a href="#api" class="nav-link">API</a>
-        <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" class="nav-link">GitHub</a>
+
+      <nav class="nav">
+        <a class="navlink" href="#features">Features</a>
+        <a class="navlink" href="#tech">Tech</a>
+        <a class="navlink" href="#run">How to Run</a>
+        <a class="navlink" href="#api">API</a>
+        <a class="navlink" href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" rel="noopener">GitHub</a>
       </nav>
 
-      <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank"
-         class="hidden sm:flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-white text-black hover:bg-zinc-100 transition-all duration-300 hover:scale-105">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <a class="btn btn-1 btn-sm" href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" rel="noopener">
         View on GitHub
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 17 17 7M9 7h8v8" />
+        </svg>
       </a>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="relative min-h-screen flex items-center justify-center hero-glow pt-20">
-    <!-- Background Elements -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
-    </div>
+  <main id="top">
 
-    <div class="relative max-w-5xl mx-auto px-6 py-20 text-center">
-      <!-- Badge -->
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium badge mb-8 animate-float">
-        <span class="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
-        Open Source • Local-First • PWA Ready
-      </div>
+    <!-- ============================ hero ============================ -->
+    <section class="hero">
+      <div class="hero-bg" style="background-image:url('images/faceplate.jpg')"></div>
+      <div class="hero-scrim"></div>
+      <div class="aurora"></div>
 
-      <!-- Headline -->
-      <h1 class="font-display text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-8">
-        Music for every<br>
-        <span class="gradient-text">mood & vibe</span>
-      </h1>
+      <div class="shell hero-grid">
+        <div>
+          <div class="pill"><span class="dot"></span> Open Source · Local-First · PWA Ready</div>
 
-      <!-- Subheadline -->
-      <p class="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
-        VibeHai is a modern, Spotify-inspired music streaming experience. 
-        Built with React and TypeScript. No accounts, no tracking — just pure music.
-      </p>
+          <h1 class="display">
+            Music for<br />
+            every<br />
+            <span class="gt">mood &amp; vibe</span>
+          </h1>
 
-      <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank"
-           class="btn-primary w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-white flex items-center justify-center gap-2">
-          <span class="relative z-10 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            Open Repository
-          </span>
-        </a>
-        <a href="#run"
-           class="btn-secondary w-full sm:w-auto px-8 py-4 rounded-full font-semibold text-white flex items-center justify-center gap-2">
-          How to Run
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-        </a>
-      </div>
-
-      <!-- Stats -->
-      <div class="mt-20 grid grid-cols-3 gap-8 max-w-lg mx-auto opacity-60">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-white">0</div>
-          <div class="text-xs text-zinc-500 uppercase tracking-wider mt-1">Accounts needed</div>
-        </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-white">∞</div>
-          <div class="text-xs text-zinc-500 uppercase tracking-wider mt-1">Songs</div>
-        </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-white">100%</div>
-          <div class="text-xs text-zinc-500 uppercase tracking-wider mt-1">Open Source</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-      <span class="text-xs text-zinc-500 uppercase tracking-widest">Scroll</span>
-      <div class="w-px h-8 bg-gradient-to-b from-zinc-500 to-transparent"></div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Features -->
-  <section id="features" class="py-32 relative">
-    <div class="max-w-6xl mx-auto px-6">
-      <div class="text-center mb-20">
-        <h2 class="font-display text-4xl sm:text-5xl font-bold mb-4 tracking-tight">Everything you need</h2>
-        <p class="text-lg text-zinc-400 max-w-xl mx-auto">A complete music experience without the bloat. Built for developers who appreciate craft.</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Feature 1 -->
-        <div class="glass-card p-8 rounded-2xl group">
-          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
-            🎵
-          </div>
-          <h3 class="font-display font-semibold text-xl mb-3 text-white">Real Music Discovery</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">
-            Search songs, albums, and artists powered by a JioSaavn-compatible API with intelligent fallbacks and caching.
+          <p class="lede">
+            VibeHai is a modern, Spotify-inspired music streaming web app built with React, TypeScript
+            and Vite. Discover songs, build playlists, enjoy a powerful player — all without any
+            account.
           </p>
-        </div>
 
-        <!-- Feature 2 -->
-        <div class="glass-card p-8 rounded-2xl group">
-          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
-            ▶️
+          <div class="cta">
+            <a class="btn btn-1" href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" rel="noopener">
+              Open Repository
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17 17 7M9 7h8v8" />
+              </svg>
+            </a>
+            <a class="btn btn-2" href="#run">
+              How to Run
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </a>
           </div>
-          <h3 class="font-display font-semibold text-xl mb-3 text-white">Advanced Player</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">
-            Queue management, shuffle, repeat, seek, volume control, sleep timer, and Media Session API integration.
-          </p>
-        </div>
 
-        <!-- Feature 3 -->
-        <div class="glass-card p-8 rounded-2xl group">
-          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
-            ❤️
+          <div class="plate-strip">
+            <div><span class="legend">Runtime</span><b>React 19</b></div>
+            <div><span class="legend">Language</span><b>TypeScript 5</b></div>
+            <div><span class="legend">Bundler</span><b>Vite 7</b></div>
+            <div><span class="legend">License</span><b>MIT</b></div>
           </div>
-          <h3 class="font-display font-semibold text-xl mb-3 text-white">Personal Library</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">
-            Liked songs, custom playlists, and recently played tracks — all persisted locally in your browser storage.
-          </p>
         </div>
 
-        <!-- Feature 4 -->
-        <div class="glass-card p-8 rounded-2xl group">
-          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
-            🌙
-          </div>
-          <h3 class="font-display font-semibold text-xl mb-3 text-white">Dual Themes</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">
-            Beautiful dark and light modes with flash-free theme switching and system preference detection.
-          </p>
-        </div>
-
-        <!-- Feature 5 -->
-        <div class="glass-card p-8 rounded-2xl group">
-          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
-            📱
-          </div>
-          <h3 class="font-display font-semibold text-xl mb-3 text-white">PWA Ready</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">
-            Install as a native app, offline shell caching, custom service worker, and proper web app manifest support.
-          </p>
-        </div>
-
-        <!-- Feature 6 -->
-        <div class="glass-card p-8 rounded-2xl group">
-          <div class="icon-container w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-6">
-            ⌨️
-          </div>
-          <h3 class="font-display font-semibold text-xl mb-3 text-white">Keyboard First</h3>
-          <p class="text-sm text-zinc-400 leading-relaxed">
-            Full keyboard shortcut support for playback control and navigation. Never leave your home row.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- Tech Stack -->
-  <section id="tech" class="py-32 relative">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <h2 class="font-display text-4xl font-bold mb-4 tracking-tight">Built with modern tech</h2>
-      <p class="text-lg text-zinc-400 mb-12">Clean architecture focused on maintainability and developer experience</p>
-
-      <div class="flex flex-wrap justify-center gap-3">
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">React 19</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">TypeScript</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">Vite 7</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">Tailwind CSS 4</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">Framer Motion</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">React Router 7</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">HTML5 Audio</span>
-        <span class="tech-pill px-5 py-2.5 rounded-full text-sm font-medium text-zinc-300">PWA</span>
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
-  <!-- How to Run -->
-  <section id="run" class="py-32 relative">
-    <div class="max-w-3xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <h2 class="font-display text-4xl font-bold mb-4 tracking-tight">How to Run</h2>
-        <p class="text-lg text-zinc-400">Get VibeHai running locally in under a minute</p>
-      </div>
-
-      <div class="space-y-6">
-        <!-- Step 1 -->
-        <div class="relative">
-          <div class="flex items-start gap-6">
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-xs font-bold text-violet-300">1</div>
-              <div class="w-px h-full step-connector mt-2"></div>
+        <!-- the player card — a real slice of the interface -->
+        <div class="player plate">
+          <div class="player-top">
+            <div class="art">
+              <img src="images/art.jpg" alt="VibeHai album artwork" onerror="this.style.display='none'" />
             </div>
-            <div class="flex-1 pb-8">
-              <h3 class="font-semibold text-white mb-3">Clone the repository</h3>
-              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
-                <code>git clone https://github.com/ashutoshpalhare/VibeHai.git<br>cd VibeHai</code>
+            <div class="meta">
+              <div class="flex items-center gap-2">
+                <span class="eq"><i></i><i></i><i></i></span>
+                <span class="legend">Now playing</span>
+              </div>
+              <h3 class="display tname">Kesariya</h3>
+              <p class="tsub">Arijit Singh · Brahmāstra</p>
+              <div class="chiprow">
+                <span class="chip chip-sm">☾ Sleep 30 min</span>
+                <span class="chip chip-sm">Lossless</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="prog">
+            <div class="bar"><i></i></div>
+            <div class="times mono"><span>1:24</span><span>-3:04</span></div>
+          </div>
+
+          <div class="controls">
+            <span class="ctl">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" />
+                <polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" />
+                <line x1="4" y1="4" x2="9" y2="9" />
+              </svg>
+            </span>
+            <span class="ctl">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="19 20 9 12 19 4" /><line x1="5" y1="19" x2="5" y2="5" />
+              </svg>
+            </span>
+            <span class="ctl ctl-play">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="7 4 20 12 7 20" />
+              </svg>
+            </span>
+            <span class="ctl">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 4 15 12 5 20" /><line x1="19" y1="5" x2="19" y2="19" />
+              </svg>
+            </span>
+            <span class="ctl">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                <polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" />
+              </svg>
+            </span>
+          </div>
+
+          <div class="player-foot">
+            <span class="legend">Space · Play</span>
+            <span class="legend">← → · Seek</span>
+            <span class="legend">Q · Queue</span>
+            <span class="legend">L · Like</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ features ============================ -->
+    <section id="features" class="block">
+      <div class="shell">
+        <div class="seam"><span class="legend">01 / Features</span></div>
+
+        <div class="shead">
+          <div>
+            <h2 class="display">Everything you need,<br /><span class="gt">nothing you don&rsquo;t.</span></h2>
+          </div>
+          <p>A complete music experience without the bloat — six systems, one small app.</p>
+        </div>
+
+        <div class="ledger">
+          <div class="lrow">
+            <div class="lnum mono">01</div>
+            <h3>Real Music Discovery</h3>
+            <p>Search songs, albums, artists and playlists powered by a JioSaavn-compatible API with smart fallbacks.</p>
+            <div class="lic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" /><path d="M16.2 16.2 21 21" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="lrow">
+            <div class="lnum mono">02</div>
+            <h3>Advanced Player</h3>
+            <p>Queue, shuffle, repeat modes, seek, volume, sleep timer, Media Session API and persistent preferences.</p>
+            <div class="lic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="lrow">
+            <div class="lnum mono">03</div>
+            <h3>Personal Library</h3>
+            <p>Liked songs, custom playlists, recently played — everything saved locally in your browser.</p>
+            <div class="lic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 20.5s-7.5-4.6-7.5-9.6A4.3 4.3 0 0 1 12 8.2a4.3 4.3 0 0 1 7.5 2.7c0 5-7.5 9.6-7.5 9.6Z" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="lrow">
+            <div class="lnum mono">04</div>
+            <h3>Dark &amp; Light Theme</h3>
+            <p>Beautiful dual theme support with flash-free boot and system preference awareness.</p>
+            <div class="lic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a7.4 7.4 0 1 0 11.1 11.1Z" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="lrow">
+            <div class="lnum mono">05</div>
+            <h3>PWA Ready</h3>
+            <p>Installable as an app, offline shell caching, custom service worker and proper web app manifest.</p>
+            <div class="lic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="6.5" y="2.5" width="11" height="19" rx="2.6" /><path d="M10.5 18.4h3" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="lrow">
+            <div class="lnum mono">06</div>
+            <h3>Keyboard Shortcuts</h3>
+            <p>Full keyboard support for playback control and navigation so you never need to leave the keyboard.</p>
+            <div class="lic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2.5" y="6" width="19" height="12" rx="2.4" /><path d="M7 10h.01M11 10h.01M15 10h.01M8 14h8" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ tech stack ============================ -->
+    <section id="tech" class="block">
+      <div class="shell">
+        <div class="seam"><span class="legend">02 / Tech stack</span></div>
+
+        <div class="shead">
+          <div><h2 class="display">Built with modern tech</h2></div>
+          <p>Clean architecture focused on maintainability and performance.</p>
+        </div>
+
+        <div class="techwrap">
+          <div class="speclist">
+            <div><span>RUNTIME</span><b>React 19</b></div>
+            <div><span>LANGUAGE</span><b>TypeScript 5</b></div>
+            <div><span>BUNDLER</span><b>Vite 7</b></div>
+            <div><span>LICENSE</span><b>MIT</b></div>
+          </div>
+
+          <div class="chips">
+            <span class="chip">React 19</span>
+            <span class="chip">TypeScript</span>
+            <span class="chip">Vite 7</span>
+            <span class="chip">Tailwind CSS 4</span>
+            <span class="chip">Framer Motion</span>
+            <span class="chip">React Router 7</span>
+            <span class="chip">HTML5 Audio</span>
+            <span class="chip">PWA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ how to run ============================ -->
+    <section id="run" class="block runband">
+      <div class="runband-bg" style="background-image:url('images/console.jpg')"></div>
+      <div class="runband-scrim"></div>
+
+      <div class="shell">
+        <div class="seam"><span class="legend">03 / How to run</span></div>
+
+        <div class="runcols">
+          <div class="sticky">
+            <h2 class="display" style="font-size:clamp(2rem, 3.6vw, 2.9rem)">Running<br /><span class="gt">in under a minute</span></h2>
+            <p style="color:var(--mut); margin-top:18px; max-width:28rem">
+              Four commands from a clean machine to a hot-reloading dev server. No accounts, no API
+              keys, no environment setup required.
+            </p>
+            <div class="note">Requires Node.js 18+ and npm</div>
+          </div>
+
+          <div class="term plate">
+            <div class="term-bar">
+              <i></i><i></i><i></i>
+              <span class="legend">vibehai — zsh</span>
+            </div>
+            <div class="steps">
+              <div class="step">
+                <span class="legend">01 — Clone the repository</span>
+                <pre class="mono"><span class="p">$</span> git clone https://github.com/ashutoshpalhare/VibeHai.git
+<span class="p">$</span> cd VibeHai</pre>
+              </div>
+              <div class="step">
+                <span class="legend">02 — Install dependencies</span>
+                <pre class="mono"><span class="p">$</span> npm install</pre>
+              </div>
+              <div class="step">
+                <span class="legend">03 — Start development server</span>
+                <pre class="mono"><span class="p">$</span> npm run dev</pre>
+              </div>
+              <div class="step">
+                <span class="legend">04 — Production build (optional)</span>
+                <pre class="mono"><span class="p">$</span> npm run build
+<span class="p">$</span> npm run preview</pre>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Step 2 -->
-        <div class="relative">
-          <div class="flex items-start gap-6">
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300">2</div>
-              <div class="w-px h-full step-connector mt-2"></div>
-            </div>
-            <div class="flex-1 pb-8">
-              <h3 class="font-semibold text-white mb-3">Install dependencies</h3>
-              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
-                <code>npm install</code>
-              </div>
+    <!-- ============================ music api ============================ -->
+    <section id="api" class="block">
+      <div class="shell">
+        <div class="seam"><span class="legend">04 / Music API</span></div>
+
+        <div class="apicols">
+          <div>
+            <h2 class="display" style="font-size:clamp(2rem, 3.6vw, 2.9rem)">Music API</h2>
+            <div class="apibody" style="margin-top:24px">
+              <p>Powered by public JioSaavn-compatible endpoints.</p>
+              <p class="finenote">Note: These are third-party services. Availability and terms can change independently of VibeHai.</p>
             </div>
           </div>
-        </div>
 
-        <!-- Step 3 -->
-        <div class="relative">
-          <div class="flex items-start gap-6">
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-full bg-pink-500/20 border border-pink-500/30 flex items-center justify-center text-xs font-bold text-pink-300">3</div>
-              <div class="w-px h-full step-connector mt-2"></div>
-            </div>
-            <div class="flex-1 pb-8">
-              <h3 class="font-semibold text-white mb-3">Start development server</h3>
-              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
-                <code>npm run dev</code>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div class="relative">
-          <div class="flex items-start gap-6">
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-xs font-bold text-violet-300">4</div>
-            </div>
-            <div class="flex-1">
-              <h3 class="font-semibold text-white mb-3">Production build (optional)</h3>
-              <div class="code-block rounded-xl p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
-                <code>npm run build<br>npm run preview</code>
-              </div>
-            </div>
+          <div class="apibody">
+            <p>VibeHai uses publicly available JioSaavn-compatible APIs to fetch song metadata, album/artist information and playback URLs.</p>
+            <p>The app includes multiple host fallbacks, request timeouts and response normalization so it remains resilient when one endpoint is unavailable.</p>
+            <p>You can optionally override the API base URL using an environment variable:</p>
+            <div class="codeblock mono">VITE_JIOSAAVN_API=https://your-custom-endpoint</div>
           </div>
         </div>
       </div>
+    </section>
 
-      <p class="mt-12 text-center text-sm text-zinc-500">
-        Requires <span class="text-zinc-400">Node.js 18+</span> and <span class="text-zinc-400">npm</span>
-      </p>
-    </div>
-  </section>
+    <!-- ============================ credit ============================ -->
+    <section class="block">
+      <div class="shell">
+        <div class="seam"><span class="legend">05 / Credit</span></div>
 
-  <div class="section-divider"></div>
-
-  <!-- API -->
-  <section id="api" class="py-32 relative">
-    <div class="max-w-3xl mx-auto px-6">
-      <div class="text-center mb-16">
-        <h2 class="font-display text-4xl font-bold mb-4 tracking-tight">Music API</h2>
-        <p class="text-lg text-zinc-400">Powered by public JioSaavn-compatible endpoints</p>
-      </div>
-
-      <div class="glass-card rounded-2xl p-8 space-y-6">
-        <p class="text-zinc-300 leading-relaxed">
-          VibeHai uses publicly available JioSaavn-compatible APIs to fetch song metadata, album/artist information, and playback URLs.
-        </p>
-        <p class="text-zinc-400 leading-relaxed text-sm">
-          The app includes multiple host fallbacks, request timeouts, and response normalization to remain resilient when endpoints are unavailable.
-        </p>
-        <div class="border-t border-white/5 pt-6">
-          <p class="text-sm text-zinc-400 mb-3">Override the API base using an environment variable:</p>
-          <div class="code-block rounded-xl p-4 font-mono text-sm text-violet-300 overflow-x-auto">
-            <code>VITE_JIOSAAVN_API=https://your-custom-endpoint</code>
+        <div class="aboutcard plate" style="margin-top:48px">
+          <div class="initials">AP</div>
+          <div>
+            <span class="legend">Author — Ashutosh Palhare</span>
+            <h2 class="display" style="margin-top:14px">Built by Ashutosh Palhare</h2>
+            <p>
+              Frontend-focused full-stack developer from India. VibeHai is an open-source project
+              created for learning, experimentation and sharing a polished music experience with the
+              community.
+            </p>
+            <div class="cta" style="margin-top:0">
+              <a class="btn btn-2" href="https://github.com/ashutoshpalhare" target="_blank" rel="noopener">GitHub</a>
+              <a class="btn btn-1" href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" rel="noopener">
+                Star the Repo
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8Z" />
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
-        <p class="text-xs text-zinc-500 border-t border-white/5 pt-4">
-          Note: These are third-party services. Availability and terms can change independently of VibeHai.
-        </p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <div class="section-divider"></div>
+  </main>
 
-  <!-- Credit / About -->
-  <section class="py-32 relative">
-    <div class="max-w-2xl mx-auto px-6 text-center">
-      <div class="w-20 h-20 mx-auto mb-8 rounded-2xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 flex items-center justify-center text-3xl font-bold text-white shadow-2xl shadow-violet-500/20">
-        AP
+  <!-- ============================ footer ============================ -->
+  <footer>
+    <div class="shell foot">
+      <div class="brand">
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="30" height="30" rx="9" fill="rgba(255,255,255,0.03)" stroke="url(#vg)" stroke-width="1.5" />
+          <path d="M8.6 9.4 16 23.2 23.4 9.4" stroke="url(#vg)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="16" cy="23.4" r="1.9" fill="#22d3ee" />
+        </svg>
+        <span class="brand-name">VibeHai</span>
+        <span class="legend" style="margin-left:14px">MIT License</span>
       </div>
-      <h2 class="font-display text-3xl font-bold mb-3 tracking-tight">Built by Ashutosh Palhare</h2>
-      <p class="text-zinc-400 mb-8 leading-relaxed max-w-md mx-auto">
-        Frontend-focused full-stack developer from India. VibeHai is an open-source project created for learning, experimentation, and sharing a polished music experience with the community.
-      </p>
-      <div class="flex justify-center gap-4">
-        <a href="https://github.com/ashutoshpalhare" target="_blank"
-           class="btn-secondary px-6 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          GitHub
-        </a>
-        <a href="https://github.com/ashutoshpalhare/VibeHai" target="_blank"
-           class="btn-primary px-6 py-3 rounded-full text-sm font-medium text-white flex items-center gap-2">
-          <span class="relative z-10 flex items-center gap-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            Star the Repo
-          </span>
-        </a>
-      </div>
-    </div>
-  </section>
 
-  <!-- Footer -->
-  <footer class="py-12 border-t border-white/5">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-pink-500"></div>
-        <span class="font-display font-semibold text-zinc-300">VibeHai</span>
+      <p class="legend" style="letter-spacing:0.14em">Made with ❤️ by Ashutosh Palhare</p>
+
+      <div class="footlinks">
+        <a class="navlink" href="https://github.com/ashutoshpalhare" target="_blank" rel="noopener">GitHub</a>
+        <a class="navlink" href="https://github.com/ashutoshpalhare/VibeHai" target="_blank" rel="noopener">Repository</a>
       </div>
-      <p class="text-sm text-zinc-500">MIT License • Made with precision by Ashutosh Palhare</p>
     </div>
   </footer>
 
