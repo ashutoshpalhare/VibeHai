@@ -1,12 +1,15 @@
 {
-  "name": "react-vite-tailwind",
+  "name": "vibehai",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
+  "description": "VibeHai — A modern, immersive music streaming platform inspired by Spotify. Built with React, TypeScript, Vite and Tailwind.",
+  "author": "Ashutosh Palhare",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "icons": "node scripts/gen-icons.cjs"
   },
   "dependencies": {
     "clsx": "2.1.1",
