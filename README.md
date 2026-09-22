@@ -169,12 +169,14 @@ The API layer includes:
 
 ### 🙏 API Credit
 
-VibeHai's API integration is powered by and inspired by the open-source **JioSaavnAPI** project by **cyberboysumanjay**.
+VibeHai relies on community-maintained, unofficial JioSaavn API implementations and publicly available API deployments, including:
 
-🔗 https://github.com/cyberboysumanjay/JioSaavnAPI
+JioSaavn API by Sumit Kolhe — https://github.com/sumitkolhe/jiosaavn-api
+JioSaavnAPI by cyberboysumanjay — https://github.com/cyberboysumanjay/JioSaavnAPI
 
-Because these services are external and may change independently of VibeHai, API availability and playback functionality are not guaranteed.
+These projects are independent of VibeHai and are used as external API sources. API endpoints, availability, response formats, and playback sources may change or become unavailable without notice.
 
+VibeHai does not claim ownership of these APIs or the underlying JioSaavn service.
 ---
 
 ## 🔐 Privacy & Data
