@@ -155,19 +155,25 @@ Media cards, song rows, shelves, player controls, queue panels, modals, and layo
 
 ## 🔌 API & Playback
 
-VibeHai uses JioSaavn-compatible API services for music metadata and playback sources.
+VibeHai uses **JioSaavn-compatible API services** for music metadata, search, and playback sources.
 
 The API layer includes:
 
 * Multiple API host fallbacks
 * Request timeout handling
 * Response normalization
-* Song/image/audio source normalization
+* Song, image, and audio source normalization
 * Search aggregation
 * Playback source fallback
-* Error handling
+* Error and failure handling
 
-Because these services are external and can change independently of VibeHai, API availability is not guaranteed.
+### 🙏 API Credit
+
+VibeHai's API integration is powered by and inspired by the open-source **JioSaavnAPI** project by **cyberboysumanjay**.
+
+🔗 https://github.com/cyberboysumanjay/JioSaavnAPI
+
+Because these services are external and may change independently of VibeHai, API availability and playback functionality are not guaranteed.
 
 ---
 
@@ -221,26 +227,89 @@ npm run build
 
 ```text
 VibeHai/
+├── docs/
+│   └── index.html
 ├── public/
+│   ├── icons/
+│   │   ├── Flex.jpeg
+│   │   ├── icon-192.png
+│   │   ├── icon-512.png
+│   │   └── maskable-512.png
 │   ├── favicon.svg
 │   ├── icons.svg
 │   ├── manifest.webmanifest
 │   └── sw.js
-│
+├── scripts/
+│   └── gen-icons.cjs
 ├── src/
+│   ├── assets/
+│   │   └── hero.png
 │   ├── components/
+│   │   ├── layout/
+│   │   │   ├── AppShell.tsx
+│   │   │   ├── FooterCredit.tsx
+│   │   │   ├── Nav.tsx
+│   │   │   └── TopBar.tsx
+│   │   ├── media/
+│   │   │   ├── AddToPlaylistModal.tsx
+│   │   │   ├── AsyncShelf.tsx
+│   │   │   ├── CreatePlaylistModal.tsx
+│   │   │   ├── DetailHero.tsx
+│   │   │   ├── MediaCard.tsx
+│   │   │   ├── Shelf.tsx
+│   │   │   ├── SongList.tsx
+│   │   │   └── SongRow.tsx
+│   │   ├── player/
+│   │   │   ├── NowPlaying.tsx
+│   │   │   ├── PlayerBar.tsx
+│   │   │   ├── QueuePanel.tsx
+│   │   │   ├── SeekBar.tsx
+│   │   │   └── SleepTimerMenu.tsx
+│   │   └── ui/
+│   │       ├── Icons.tsx
+│   │       ├── index.tsx
+│   │       └── Menu.tsx
 │   ├── context/
+│   │   ├── LibraryContext.tsx
+│   │   ├── PlayerContext.tsx
+│   │   ├── ThemeContext.tsx
+│   │   └── ToastContext.tsx
 │   ├── hooks/
+│   │   ├── useAsync.ts
+│   │   └── useKeyboardShortcuts.ts
 │   ├── lib/
+│   │   ├── format.ts
+│   │   ├── saavn.ts
+│   │   ├── storage.ts
+│   │   └── types.ts
 │   ├── pages/
+│   │   ├── About.tsx
+│   │   ├── Collections.tsx
+│   │   ├── Details.tsx
+│   │   ├── Discover.tsx
+│   │   ├── Home.tsx
+│   │   ├── Library.tsx
+│   │   ├── Misc.tsx
+│   │   ├── Profile.tsx
+│   │   ├── Search.tsx
+│   │   └── Settings.tsx
 │   ├── pwa/
-│   └── utils/
-│
+│   │   └── register.ts
+│   ├── utils/
+│   │   └── cn.ts
+│   ├── App.css
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .gitignore
 ├── index.html
+├── LICENSE
+├── package-lock.json
 ├── package.json
+├── README.md
 ├── tsconfig.json
-├── vite.config.ts
-└── README.md
+└── vite.config.ts
+
 ```
 
 ---
