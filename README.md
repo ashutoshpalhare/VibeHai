@@ -171,12 +171,13 @@ The API layer includes:
 
 VibeHai relies on community-maintained, unofficial JioSaavn API implementations and publicly available API deployments, including:
 
-JioSaavn API by Sumit Kolhe — https://github.com/sumitkolhe/jiosaavn-api
-JioSaavnAPI by cyberboysumanjay — https://github.com/cyberboysumanjay/JioSaavnAPI
+* JioSaavn API by Sumit Kolhe — https://github.com/sumitkolhe/jiosaavn-api
+* JioSaavnAPI by cyberboysumanjay — https://github.com/cyberboysumanjay/JioSaavnAPI
 
 These projects are independent of VibeHai and are used as external API sources. API endpoints, availability, response formats, and playback sources may change or become unavailable without notice.
 
 VibeHai does not claim ownership of these APIs or the underlying JioSaavn service.
+
 ---
 
 ## 🔐 Privacy & Data
