@@ -91,6 +91,7 @@ export default function NowPlaying() {
         <div className="mt-4 grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
           {/* left: art + controls */}
           <div className="flex min-h-0 flex-col items-center justify-center gap-7">
+            {/* ========== ROTATING ALBUM ART ========== */}
             <motion.div
               layout
               key={song?.id}
@@ -98,21 +99,56 @@ export default function NowPlaying() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: "spring", stiffness: 220, damping: 26 }}
               className={cn(
-                "relative aspect-square w-[min(78vw,min(58vh,420px))] overflow-hidden rounded-3xl shadow-[0_40px_120px_-30px_rgba(0,0,0,0.9)] ring-1 ring-white/10",
+                "relative aspect-square w-[min(72vw,min(52vh,380px))] sm:w-[min(68vw,min(54vh,400px))] lg:w-[min(58vh,420px)]",
+                "overflow-hidden rounded-full shadow-[0_40px_120px_-30px_rgba(0,0,0,0.9)] ring-1 ring-white/10",
                 !song && "bg-white/5",
               )}
             >
+              {/* Vinyl-style outer ring */}
+              <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-white/10" />
+              <div className="pointer-events-none absolute inset-[6%] rounded-full border border-white/[0.06]" />
+
               {song ? (
-                <img src={song.image || FALLBACK_ART} alt="" className="h-full w-full object-cover" />
+                <motion.img
+                  src={song.image || FALLBACK_ART}
+                  alt={song.title || "Album art"}
+                  className="h-full w-full object-cover"
+                  animate={{ rotate: player.isPlaying ? 360 : 0 }}
+                  transition={
+                    player.isPlaying
+                      ? {
+                          rotate: {
+                            duration: 18,
+                            ease: "linear",
+                            repeat: Infinity,
+                          },
+                        }
+                      : {
+                          rotate: {
+                            duration: 0.6,
+                            ease: "easeOut",
+                          },
+                        }
+                  }
+                />
               ) : (
                 <span className="grid h-full w-full place-items-center text-5xl">🎧</span>
               )}
+
+              {/* Center spindle (vinyl look) */}
+              {song && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <div className="h-[14%] w-[14%] rounded-full bg-ink-950/90 ring-2 ring-white/15 shadow-inner" />
+                </div>
+              )}
+
               {player.isBuffering && (
                 <span className="absolute inset-0 grid place-items-center bg-black/40">
                   <InlineSpinner className="h-8 w-8 border-2" />
                 </span>
               )}
             </motion.div>
+            {/* ========== END ROTATING ART ========== */}
 
             <div className="w-full max-w-xl space-y-4">
               <div className="flex items-start justify-between gap-4">
